@@ -36,7 +36,7 @@ app.on('ready', function() {
   mainWindow = new BrowserWindow(
     {
       width: 800,
-      height: 900,
+      height: 600,
       center: true,
       resizable: false,
       autoHideMenuBar: true
@@ -133,7 +133,8 @@ function writeDataToCSV(content, outputDir, filename) {
 }
 
 ipcMain.on('build', function (event, showFilesDir, outputDir, inventoryFilename) {
-    var result = buildData(showFilesDir);
+    var result = buildData(showFilesDir, event);
+    var fullFilePath = path.resolve(outputDir, inventoryFilename);
     writeDataToCSV(result, outputDir, inventoryFilename);
-    //event.sender.send('result', result);
+    event.sender.send('result', result, fullFilePath);
 });

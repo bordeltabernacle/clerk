@@ -2,8 +2,10 @@ const ipcRenderer = require('electron').ipcRenderer;
 const remote = require('electron').remote;
 const dialog = remote.require('dialog');
 
+document.getElementById('resultMessage').style.visibility = "hidden";
+
 var d = new Date()
-var defaultFilename = "Inventory-" + d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + "-" + d.getHours() + d.getMinutes() + d.getSeconds();
+var defaultFilename = "Inventory_" + d.getFullYear() + "_" + (d.getMonth() + 1) + "_" + d.getDate() + "_" + d.getHours() + d.getMinutes() + d.getSeconds();
 document.getElementById('inventoryFilename').value = defaultFilename;
 
 var showFilesDirButton = document.getElementById('showFilesDirSelect');
@@ -27,9 +29,13 @@ buildButton.addEventListener('click', function (event) {
   var showFilesDirPath = document.getElementById('showFilesDirPath').value;
   var outputDirPath = document.getElementById('outputDirPath').value;
   var inventoryFilename = document.getElementById('inventoryFilename').value;
+  var inputForm = document.getElementById('inputForm');
+  inputForm.parentNode.removeChild(inputForm);
   ipcRenderer.send('build', showFilesDirPath, outputDirPath, inventoryFilename);
 });
 
-//ipcRenderer.on('result', function (event, arg) {
-//    console.log(arg);
-//});
+ipcRenderer.on('result', function (event, result, inventoryFilename) {
+    document.getElementById('resultMessage').style.visibility = "visible";
+    document.getElementById('msg').innerHTML = inventoryFilename + ".csv";
+    document.getElementById('resultCSVData').innerHTML = result;
+});
