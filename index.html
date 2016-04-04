@@ -1,30 +1,49 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Bootstrap -->
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css" />
+    <!-- Styles -->
     <link rel="stylesheet" type="text/css" href="css/styles.css" />
     <title>Cisco Clerk</title>
-</head>
-<body>
-    <div><h1>Cisco Clerk</h1></div>
+  </head>
+  <body>
+    <header class="header-nav" >
+      <nav class="header-nav" class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="navbar-header">
+          <img class="pull-left" id="logo-img" src="images/BT_mark_4col_pos_CS3_Small.jpg" alt="BT Logo">
+            <div class="navbar-brand">
+              <h1>Clerk</h1>
+              <span> Inventory Generation</span>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
     <div>
-        Select your show files directory:
-        <input id="showFilesDirPath" type="text" placeholder="show files" />
-        <button id="showFilesDirSelect">Browse</button>
+      Select your show files directory:
+      <input id="showFilesDirPath" type="text" placeholder="show files" />
+      <button id="showFilesDirSelect">Browse</button>
     </div>
     <div>
-        Select your output directory:
-        <input id="outputDirPath" type="text" placeholder="output" />
-        <button id="outputDirSelect">Browse</button>
+      Select your output directory:
+      <input id="outputDirPath" type="text" placeholder="output" />
+      <button id="outputDirSelect">Browse</button>
     </div>
     <div>
-        Name for Inventory:
-        <input id="inventoryFilename" type="text" />
+      Name for Inventory:
+      <input id="inventoryFilename" type="text" />
     </div>
     <div><button id="build">Build Inventory</button></div>
-
-
-
+    <!-- JQUERY -->
+    <script src="js/jquery-2.2.2.min.js"></script>
+    <!-- BOOTSTRAP -->
+    <script src="js/bootstrap.min.js"></script>
+    <!-- PROJECT -->
     <script src="index.js"></script>
-</body>
+  </body>
 </html>

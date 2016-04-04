@@ -1,3 +1,37 @@
-body {
-  background: white;
+@font-face {
+  font-family: 'BTFontRegular';
+  src: url('../fonts/BTFont_Rg.ttf')  format('truetype')
 }
+
+body {
+  background-color: white;
+  color: #55379b;
+  font-family: 'BTFontRegular', sans-serif;
+}
+
+/** HEADER **/
+.header-nav {
+  color: #55379b;
+  border-radius: 0;
+  border: 0;
+}
+
+/*
+.navbar-brand {
+  padding-top: 25px;
+}
+*/
+
+.navbar-brand h1 {
+  font-size: 1.5em;
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+
+#logo-img {
+  width: 150px; /* you can use % */
+  height: auto;
+  margin: 10px 15px 10px 0;
+}
+
+
