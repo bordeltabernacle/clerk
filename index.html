@@ -6,6 +6,8 @@
     <!-- Bootstrap -->
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css" />
+    <!-- Tooltips -->
+    <link rel="stylesheet" type="text/css" href="css/balloon.min.css" />
     <!-- Styles -->
     <link rel="stylesheet" type="text/css" href="css/styles.css" />
     <title>Cisco Clerk</title>
@@ -15,7 +17,7 @@
       <nav class="header-nav" class="navbar navbar-default">
         <div class="container-fluid">
           <div class="navbar-header">
-          <img class="pull-left" id="logo-img" src="images/BT_mark_4col_pos_CS3_Small.jpg" alt="BT Logo">
+            <img class="pull-left" id="logo-img" src="images/BT_mark_4col_pos_CS3_Small.jpg" alt="BT Logo">
             <div class="navbar-brand">
               <h1>Clerk</h1>
               <span> Inventory Generation</span>
@@ -24,21 +26,33 @@
         </div>
       </nav>
     </header>
-    <div>
-      Select your show files directory:
-      <input id="showFilesDirPath" type="text" placeholder="show files" />
-      <button id="showFilesDirSelect">Browse</button>
+    <div id="main" class="container">
+      <div class="row">
+        <div class="center">
+          <div class="col-md-8">
+            <form class="form-horizontal">
+              <div class="form-group">
+                <label for="showFilesDirPath" data-balloon-length="medium" data-balloon="This is the folder containing your Cisco show commands output files" data-balloon-pos="right">Select your show files directory:</label>
+                <input id="showFilesDirPath" class="form-control" type="text" placeholder="show files directory" />
+                <button type="button" class="btn btn-default form-button" id="showFilesDirSelect">Browse</button>
+              </div>
+              <div class="form-group">
+                <label for="outputDirPath" data-balloon-length="medium" data-balloon="This is the folder you would like your Inventory to be created in" data-balloon-pos="right">Select your output directory:</label>
+                <input type="text" class="form-control" id="outputDirPath" placeholder="output directory">
+                <button type="button" class="btn btn-default form-button" id="outputDirSelect">Browse</button>
+              </div>
+              <div class="form-group">
+                <label for="inventoryFilename" data-balloon-length="medium" data-balloon="Your Inventory will be individually named according to the date and time unless otherwise specified.  You do not need to specify the file extension, it will be .csv" data-balloon-pos="right">Inventory Filename:</label>
+                <input type="text" class="form-control" id="inventoryFilename" aria-describedby="basic-addon2">
+              </div>
+              <div class="form-group">
+                <button id="build" type="button" class="btn btn-default form-button" data-balloon-length="medium" data-balloon="Let's build your Inventory!" data-balloon-pos="right">Build Inventory</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
-    <div>
-      Select your output directory:
-      <input id="outputDirPath" type="text" placeholder="output" />
-      <button id="outputDirSelect">Browse</button>
-    </div>
-    <div>
-      Name for Inventory:
-      <input id="inventoryFilename" type="text" />
-    </div>
-    <div><button id="build">Build Inventory</button></div>
     <!-- JQUERY -->
     <script src="js/jquery-2.2.2.min.js"></script>
     <!-- BOOTSTRAP -->

@@ -14,13 +14,8 @@ body {
   color: #55379b;
   border-radius: 0;
   border: 0;
+  margin: 20px 0 30px 10px;
 }
-
-/*
-.navbar-brand {
-  padding-top: 25px;
-}
-*/
 
 .navbar-brand h1 {
   font-size: 1.5em;
@@ -32,6 +27,40 @@ body {
   width: 150px; /* you can use % */
   height: auto;
   margin: 10px 15px 10px 0;
+}
+
+/** CONTENT **/
+#main {
+  width: 500px;
+  margin: 0 auto;
+}
+
+.form-control {
+  border-color: #55379b;
+}
+
+.form-control:focus {
+  border-color: #55379b;
+  border-width: 2px;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+}
+
+.form-button {
+  margin-top: 5px;
+  color: #55379b;
+  border-color: #55379b;
+  background-image: none;
+  background-color: #eeeeee;
+}
+
+.form-button:hover {
+  background-color: #55379b;
+  color: white;
+}
+
+#build {
+  margin-top: 20px;
 }
 
 
