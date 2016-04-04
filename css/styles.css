@@ -10,11 +10,22 @@ body {
 }
 
 /** HEADER **/
-.header-nav {
-  color: #55379b;
+.navbar-header {
+
+}
+
+.navbar {
+  width: 630px;
+  margin: 30px auto;
   border-radius: 0;
   border: 0;
-  margin: 20px 0 30px 10px;
+  background-image: none;
+  background-color: white;
+  box-shadow: none;
+}
+
+.navbar-default .navbar-brand {
+  color: #55379b;
 }
 
 .navbar-brand h1 {
@@ -31,7 +42,7 @@ body {
 
 /** CONTENT **/
 #main {
-  width: 500px;
+  width: 600px;
   margin: 0 auto;
 }
 

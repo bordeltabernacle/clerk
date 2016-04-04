@@ -33,7 +33,14 @@ app.on('window-all-closed', function() {
 // initialization and is ready to create browser windows.
 app.on('ready', function() {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 800, height: 600});
+  mainWindow = new BrowserWindow(
+    {
+      width: 800,
+      height: 900,
+      center: true,
+      resizable: false,
+      autoHideMenuBar: true
+    });
 
   // and load the index.html of the app.
   mainWindow.loadURL('file://' + __dirname + '/index.html');
@@ -120,9 +127,6 @@ function buildData(dir) {
 }
 
 function writeDataToCSV(content, outputDir, filename) {
-  //var defaultFilename = "Inventory-" + d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + "-" + d.getHours() + d.getMinutes() + d.getSeconds();
-  //var filename = name || defaultFilename;
-  // console.log(typeof filename);
   var outputPath = outputDir || __dirname;
   var fullPathFilename = path.resolve(outputPath, filename) + ".csv";
   fs.writeFileSync(fullPathFilename, content);
