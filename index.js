@@ -68,7 +68,6 @@ ipcRenderer.on('result', function (event, result, inventoryFilename) {
 var startAgainButton = document.getElementById('startAgain');
 
 startAgainButton.addEventListener('click', function (event) {
-  console.log("pressed");
   document.getElementById('alertMessage').style.visibility = "hidden";
   document.getElementById('resultMessage').style.display = "none";
   document.getElementById('showFilesDirPath').value = "";
