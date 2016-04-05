@@ -2,11 +2,13 @@ const ipcRenderer = require('electron').ipcRenderer;
 const remote = require('electron').remote;
 const dialog = remote.require('dialog');
 var Firebase = require("firebase");
+var clerkFirebase = new Firebase("https://clerk.firebaseio.com/");
 
 document.getElementById('btEmailInput').value = localStorage.btEmail;
 
 var loginPageContinueButton = document.getElementById('loginPageContinue');
 loginPageContinueButton.addEventListener('click', function(event) {
+  t1 = performance.now();
   var btEmailInputValue = document.getElementById('btEmailInput').value;
   var projectNameInputValue = document.getElementById('projectNameInput').value;
   if (btEmailInputValue == "" && projectNameInputValue == "") {
@@ -20,8 +22,9 @@ loginPageContinueButton.addEventListener('click', function(event) {
     document.getElementById('alertMessage').style.visibility = "visible";
   } else {
     localStorage.btEmail = document.getElementById('btEmailInput').value;
-    var projectName = document.getElementById('projectNameInput').value;
-    var d = new Date()
+    projectName = document.getElementById('projectNameInput').value;
+    user = document.getElementById('btEmailInput').value;
+    d = new Date()
     var defaultFilename = projectName.replace(/ /g,"_") + "_inventory_" + d.getFullYear() + (d.getMonth() + 1) + d.getDate() + d.getHours() + d.getMinutes() + d.getSeconds();
     document.getElementById('inventoryFilename').value = defaultFilename;
     document.getElementById('alertMessage').style.visibility = "hidden";
@@ -62,10 +65,20 @@ buildButton.addEventListener('click', function (event) {
 ipcRenderer.on('result', function (event, result, inventoryFilename) {
     document.getElementById('resultMessage').style.display = "block";
     document.getElementById('msg').innerHTML = inventoryFilename + ".csv";
+    t2 = performance.now();
     // document.getElementById('resultCSVData').innerHTML = result;
+    clerkFirebase.push({
+      date: d,
+      user: user,
+      project: projectName,
+      files: noOfFiles,
+      devices: devices,
+      time: ((t2 - t1) / 1000)
+    });
 });
 
 ipcRenderer.on('files', function (event, files) {
+  noOfFiles = files.length;
   var output = '';
   files.map(function (file) {
     output += '<li>' + file + '</li>';
@@ -74,6 +87,7 @@ ipcRenderer.on('files', function (event, files) {
 });
 
 ipcRenderer.on('devices', function (event, noOfDevices) {
+  devices = noOfDevices;
   // document.getElementById('noOfDevices').innerHTML = noOfDevices;
 })
 
