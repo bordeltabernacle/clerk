@@ -118,7 +118,9 @@ function buildData(dir) {
   var dirString = String(dir);
   var output = "Hostname,Serial Number,Model,Software Version,Software Image\n";
   fs.readdirSync(dirString).map(function(file) {
+    console.log(toString(file));
     parseFile(file).map(function(device) {
+      console.log(toString(device));
       output += device;
       output += "\n"
     });
