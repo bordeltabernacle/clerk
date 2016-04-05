@@ -36,28 +36,24 @@
           <div class="col-md-8">
             <!-- LOGIN PAGE -->
             <div id="loginPage">
-
-            <form>
-            <div id="alertMessage" class="alert alert-danger" role="alert">
-              .
-            </div>
-            <div>
-              <h4>Please Enter your BT Email and a project name.</h4>
-            </div>
-              <div class="input-group" data-balloon-length="medium" data-balloon="You only need to enter the name part of your email address" data-balloon-pos="up">
-
+              <form>
+                <div id="alertMessage" class="alert alert-danger" role="alert">
+                  .
+                </div>
+                <div>
+                  <h4>Please Enter your BT Email and a project name.</h4>
+                </div>
+                <div class="input-group" data-balloon-length="medium" data-balloon="You only need to enter the name part of your email address" data-balloon-pos="up">
                   <input id="btEmailInput" type="text" class="form-control" placeholder="BT email" aria-describedby="basic-addon2" >
                   <span class="input-group-addon" id="basic-addon2">@bt.com</span>
                 </div>
                 <div class="form-group" data-balloon-length="medium" data-balloon="This is the project name associated with the Cisco show files you are processing" data-balloon-pos="down">
-
                   <input id="projectNameInput" type="text" class="form-control" placeholder="Project Name">
                 </div>
                 <div class="form-group">
                   <button id="loginPageContinue" type="button" class="btn btn-default form-button pull-right" >Continue</button>
                 </div>
-            </form>
-
+              </form>
             </div>
             <!-- INPUT FORM -->
             <div id="inputForm">
@@ -88,6 +84,9 @@
               </div>
               <b id="msg"></b>
               <div id="resultCSVData"></div>
+              <div>
+                <button id="startAgain" class="btn btn-default form-button pull-right">Generate another inventory</button>
+              </div>
             </div>
           </div>
         </div>
