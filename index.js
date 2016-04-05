@@ -3,7 +3,7 @@ const remote = require('electron').remote;
 const dialog = remote.require('dialog');
 var Firebase = require("firebase");
 
-var projectName = "";
+localStorage.btEmail = document.getElementById('btEmailInput').value;
 
 var loginPageContinueButton = document.getElementById('loginPageContinue');
 loginPageContinueButton.addEventListener('click', function(event) {
@@ -19,7 +19,8 @@ loginPageContinueButton.addEventListener('click', function(event) {
     document.getElementById('alertMessage').innerHTML = "Please Enter a Project name.";
     document.getElementById('alertMessage').style.visibility = "visible";
   } else {
-    projectName = document.getElementById('projectNameInput').value;
+    localStorage.setItem("btEmail", document.getElementById('btEmailInput').value);
+    var projectName = document.getElementById('projectNameInput').value;
     var d = new Date()
     var defaultFilename = projectName.replace(/ /g,"_") + "_inventory_" + d.getFullYear() + (d.getMonth() + 1) + d.getDate() + d.getHours() + d.getMinutes() + d.getSeconds();
     document.getElementById('inventoryFilename').value = defaultFilename;
