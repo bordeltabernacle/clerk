@@ -46,6 +46,27 @@ body {
 }
 
 /** CONTENT **/
+#inputForm {
+  display:none;
+}
+
+#resultMessage {
+  display:none;
+}
+
+#alertMessage {
+  visibility: hidden;
+}
+
+#basic-addon2 {
+  border-color: #55379b;
+  color: #55379b;
+}
+
+#projectNameInput {
+  margin-top: 30px;
+}
+
 #main {
   width: 600px;
   margin: 0 auto;

@@ -4,12 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- jQuery -->
-
     <script type="text/javascript" src="js/jquery-2.2.2.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
-
-
     <!-- Bootstrap -->
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css" />
@@ -37,6 +34,32 @@
       <div class="row">
         <div class="center">
           <div class="col-md-8">
+            <!-- LOGIN PAGE -->
+            <div id="loginPage">
+
+            <form>
+            <div id="alertMessage" class="alert alert-danger" role="alert">
+              .
+            </div>
+            <div>
+              <h4>Please Enter your BT Email and a project name.</h4>
+            </div>
+              <div class="input-group" data-balloon-length="medium" data-balloon="You only need to enter the name part of your email address" data-balloon-pos="up">
+
+                  <input id="btEmailInput" type="text" class="form-control" placeholder="BT email" aria-describedby="basic-addon2" >
+                  <span class="input-group-addon" id="basic-addon2">@bt.com</span>
+                </div>
+                <div class="form-group" data-balloon-length="medium" data-balloon="This is the project name associated with the Cisco show files you are processing" data-balloon-pos="down">
+
+                  <input id="projectNameInput" type="text" class="form-control" placeholder="Project Name">
+                </div>
+                <div class="form-group">
+                  <button id="loginPageContinue" type="button" class="btn btn-default form-button pull-right" >Continue</button>
+                </div>
+            </form>
+
+            </div>
+            <!-- INPUT FORM -->
             <div id="inputForm">
               <form class="form-horizontal">
                 <div class="form-group">
@@ -58,6 +81,7 @@
                 </div>
               </form>
             </div>
+            <!-- RESULT MESSAGE -->
             <div id="resultMessage">
               <div id="resultMessage" class="alert alert-success" role="alert">
                 <p>Your Inventory has been created successfully</p>
@@ -69,7 +93,6 @@
         </div>
       </div>
     </div>
-
     <!-- PROJECT -->
     <script src="index.js"></script>
   </body>

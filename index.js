@@ -1,8 +1,28 @@
 const ipcRenderer = require('electron').ipcRenderer;
 const remote = require('electron').remote;
 const dialog = remote.require('dialog');
+var Firebase = require("firebase");
 
-document.getElementById('resultMessage').style.visibility = "hidden";
+var loginPageContinueButton = document.getElementById('loginPageContinue');
+loginPageContinueButton.addEventListener('click', function(event) {
+  var btEmailInputValue = document.getElementById('btEmailInput').value;
+  var projectNameInputValue = document.getElementById('projectNameInput').value;
+  if (btEmailInputValue == "" && projectNameInputValue == "") {
+    document.getElementById('alertMessage').innerHTML = "Please Enter your BT Email Address and a Project name.";
+    document.getElementById('alertMessage').style.visibility = "visible";
+  } else if (btEmailInputValue == "") {
+    document.getElementById('alertMessage').innerHTML = "Please Enter your BT Email Address.";
+    document.getElementById('alertMessage').style.visibility = "visible";
+  } else if (projectNameInputValue == "") {
+    document.getElementById('alertMessage').innerHTML = "Please Enter a Project name.";
+    document.getElementById('alertMessage').style.visibility = "visible";
+  } else {
+    document.getElementById('alertMessage').style.visibility = "hidden";
+    document.getElementById('loginPage').style.display = "none";
+    document.getElementById('inputForm').style.display = "block";
+  };
+});
+
 
 var d = new Date()
 var defaultFilename = "Inventory_" + d.getFullYear() + "_" + (d.getMonth() + 1) + "_" + d.getDate() + "_" + d.getHours() + d.getMinutes() + d.getSeconds();
@@ -35,7 +55,7 @@ buildButton.addEventListener('click', function (event) {
 });
 
 ipcRenderer.on('result', function (event, result, inventoryFilename) {
-    document.getElementById('resultMessage').style.visibility = "visible";
+    document.getElementById('resultMessage').style.display = "block";
     document.getElementById('msg').innerHTML = inventoryFilename + ".csv";
     document.getElementById('resultCSVData').innerHTML = result;
 });
