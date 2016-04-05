@@ -62,8 +62,20 @@ buildButton.addEventListener('click', function (event) {
 ipcRenderer.on('result', function (event, result, inventoryFilename) {
     document.getElementById('resultMessage').style.display = "block";
     document.getElementById('msg').innerHTML = inventoryFilename + ".csv";
-    document.getElementById('resultCSVData').innerHTML = result;
+    // document.getElementById('resultCSVData').innerHTML = result;
 });
+
+ipcRenderer.on('files', function (event, files) {
+  var output = '';
+  files.map(function (file) {
+    output += '<li>' + file + '</li>';
+  })
+  document.getElementById('filesProcessed').innerHTML = output;
+});
+
+ipcRenderer.on('devices', function (event, noOfDevices) {
+  // document.getElementById('noOfDevices').innerHTML = noOfDevices;
+})
 
 var startAgainButton = document.getElementById('startAgain');
 

@@ -114,19 +114,7 @@ function parseFile(fileName) {
 }
 
 // Loop through test Data directory
-function buildData(dir) {
-  var dirString = String(dir);
-  var output = "Hostname,Serial Number,Model,Software Version,Software Image\n";
-  fs.readdirSync(dirString).map(function(file) {
-    console.log(file);
-    parseFile(file).map(function(device) {
-      console.log(device);
-      output += device;
-      output += "\n"
-    });
-  });
-  return output;
-}
+
 
 function writeDataToCSV(content, outputDir, filename) {
   var outputPath = outputDir || __dirname;
@@ -135,8 +123,27 @@ function writeDataToCSV(content, outputDir, filename) {
 }
 
 ipcMain.on('build', function (event, showFilesDir, outputDir, inventoryFilename) {
-    var result = buildData(showFilesDir, event);
-    var fullFilePath = path.resolve(outputDir, inventoryFilename);
-    writeDataToCSV(result, outputDir, inventoryFilename);
-    event.sender.send('result', result, fullFilePath);
+
+  function buildData(dir) {
+    var files = [];
+    var noOfDevices = 0;
+    var dirString = String(dir);
+    var output = "Hostname,Serial Number,Model,Software Version,Software Image\n";
+    fs.readdirSync(dirString).map(function(file) {
+      files.push(file);
+      parseFile(file).map(function(device) {
+        noOfDevices += 1;
+        output += device;
+        output += "\n"
+      });
+    });
+    event.sender.send('devices', noOfDevices);
+    event.sender.send('files', files);
+    return output;
+  };
+
+  var result = buildData(showFilesDir, event);
+  var fullFilePath = path.resolve(outputDir, inventoryFilename);
+  writeDataToCSV(result, outputDir, inventoryFilename);
+  event.sender.send('result', result, fullFilePath);
 });
