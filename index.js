@@ -5,6 +5,8 @@ const dialog = remote.require('dialog');
 var Firebase = require("firebase");
 var clerkFirebase = new Firebase("https://clerk.firebaseio.com/");
 
+var timeTaken;
+
 document.getElementById('btEmailInput').value = localStorage.btEmail;
 
 var loginPageContinueButton = document.getElementById('loginPageContinue');
@@ -34,9 +36,6 @@ loginPageContinueButton.addEventListener('click', function(event) {
   };
 });
 
-
-
-
 var showFilesDirButton = document.getElementById('showFilesDirSelect');
 var outputDirButton = document.getElementById('outputDirSelect');
 
@@ -59,38 +58,35 @@ buildButton.addEventListener('click', function (event) {
   var outputDirPath = document.getElementById('outputDirPath').value;
   var inventoryFilename = document.getElementById('inventoryFilename').value.replace(/ /g,"_");
   document.getElementById('inputForm').style.display = "none";
-  // inputForm.parentNode.removeChild(inputForm);
   ipcRenderer.send('build', showFilesDirPath, outputDirPath, inventoryFilename);
 });
 
-ipcRenderer.on('result', function (event, result, inventoryFilename) {
-    document.getElementById('resultMessage').style.display = "block";
-    document.getElementById('msg').innerHTML = inventoryFilename + ".csv";
-    t2 = performance.now();
-    // document.getElementById('resultCSVData').innerHTML = result;
-    clerkFirebase.push({
-      date: d,
-      user: user,
-      project: projectName,
-      files: noOfFiles,
-      devices: devices,
-      time: ((t2 - t1) / 1000)
-    });
+ipcRenderer.on('result', function (event, result, inventoryFilename, noOfFiles, noOfDevices) {
+  document.getElementById('resultMessage').style.display = "block";
+  document.getElementById('msg').innerHTML = '<b>' + inventoryFilename + ".csv</b>";
+  t2 = performance.now();
+  timeTaken = Math.round(((t2 - t1) / 1000));
+  clerkFirebase.push({
+    date: new Date(),
+    user: user,
+    project: projectName,
+    files: noOfFiles,
+    devices: noOfDevices,
+    time: timeTaken
+  });
 });
 
-ipcRenderer.on('files', function (event, files) {
-  noOfFiles = files.length;
-  var output = '';
-  files.map(function (file) {
-    output += '<li>' + file + '</li>';
-  })
-  document.getElementById('filesProcessed').innerHTML = output;
+ipcRenderer.on('stats', function (event, noOfFiles, noOfDevices, timeTaken) {
+  output = '<p><b>' + noOfFiles + '</b> files and <b>' +
+    noOfDevices + '</b> devices processed in <b>' +
+    timeTaken + 'ms</b>.</p>';
+  document.getElementById('stats').innerHTML = output;
 });
 
-ipcRenderer.on('devices', function (event, noOfDevices) {
-  devices = noOfDevices;
-  // document.getElementById('noOfDevices').innerHTML = noOfDevices;
-});
+//ipcRenderer.on('devices', function (event, noOfDevices) {
+//  devices = noOfDevices;
+//  // document.getElementById('noOfDevices').innerHTML = noOfDevices;
+//});
 
 var startAgainButton = document.getElementById('startAgain');
 

@@ -15,6 +15,9 @@ var hostnameRegex = /(\S+)\#sh[ow\s]+ver.*/;
 var serialNumberRegex = /[Ss]ystem\s+[Ss]erial\s+[Nn]umber\s+:\s([\w]+)/g;
 var modelSoftwareRegex = /([\w-]+)\s+(\d{2}\.[\w\.)?(?]+)\s+(\w+[-|_][\w-]+\-[\w]+)/g;
 
+var noOfFiles;
+var noOfDevices;
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 var mainWindow = null;
@@ -113,8 +116,9 @@ function parseFile(fileName, dir) {
 
 // Loop through test Data directory
   function buildData(dir) {
+    var start = new Date().getTime();
     var files = [];
-    var noOfDevices = 0;
+    noOfDevices = 0;
     var dirString = String(dir);
     var output = "Hostname,Serial Number,Model,Software Version,Software Image\n";
     fs.readdirSync(dirString).map(function(file) {
@@ -125,8 +129,11 @@ function parseFile(fileName, dir) {
         output += "\n"
       });
     });
-    mainWindow.webContents.send('devices', noOfDevices);
-    mainWindow.webContents.send('files', files);
+    noOfFiles = files.length;
+    //noOfDevices = noOfDevices;
+    var end = new Date().getTime();
+    var timeTaken = end - start;
+    mainWindow.webContents.send('stats', noOfFiles, noOfDevices, timeTaken);
     return output;
   };
 
@@ -140,5 +147,5 @@ ipcMain.on('build', function (event, showFilesDir, outputDir, inventoryFilename)
   var result = buildData(showFilesDir);
   var fullFilePath = path.resolve(outputDir, inventoryFilename);
   writeDataToCSV(result, outputDir, inventoryFilename);
-  event.sender.send('result', result, fullFilePath);
+  event.sender.send('result', result, fullFilePath, noOfFiles, noOfDevices);
 });
