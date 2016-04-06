@@ -135,7 +135,7 @@ ipcMain.on('build', function (event, showFilesDir, outputDir, inventoryFilename)
         output += "\n"
       });
     });
-    mainWindow.webContents.send('test', "web contents");
+    //mainWindow.webContents.send('test', "web contents");
     event.sender.send('devices', noOfDevices);
     event.sender.send('files', files);
     return output;

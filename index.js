@@ -1,3 +1,4 @@
+require('bootstrap');
 const ipcRenderer = require('electron').ipcRenderer;
 const remote = require('electron').remote;
 const dialog = remote.require('dialog');
@@ -102,6 +103,6 @@ startAgainButton.addEventListener('click', function (event) {
 });
 
 
-ipcRenderer.on('test', function (event, arg) {
-  console.log(arg);
-});
+//ipcRenderer.on('test', function (event, arg) {
+//  console.log(arg);
+//});
