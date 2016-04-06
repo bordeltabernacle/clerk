@@ -5,7 +5,7 @@ const dialog = remote.require('dialog');
 var Firebase = require("firebase");
 var clerkFirebase = new Firebase("https://clerk.firebaseio.com/");
 
-var timeTaken;
+//var timeTaken;
 
 document.getElementById('btEmailInput').value = localStorage.btEmail;
 
@@ -65,9 +65,9 @@ ipcRenderer.on('result', function (event, result, inventoryFilename, noOfFiles, 
   document.getElementById('resultMessage').style.display = "block";
   document.getElementById('msg').innerHTML = '<b>' + inventoryFilename + ".csv</b>";
   t2 = performance.now();
-  timeTaken = Math.round(((t2 - t1) / 1000));
+  const timeTaken = parseFloat((t2 - t1) / 1000).toFixed(2);
   clerkFirebase.push({
-    date: new Date(),
+    date: String(new Date()),
     user: user,
     project: projectName,
     files: noOfFiles,
@@ -82,11 +82,6 @@ ipcRenderer.on('stats', function (event, noOfFiles, noOfDevices, timeTaken) {
     timeTaken + 'ms</b>.</p>';
   document.getElementById('stats').innerHTML = output;
 });
-
-//ipcRenderer.on('devices', function (event, noOfDevices) {
-//  devices = noOfDevices;
-//  // document.getElementById('noOfDevices').innerHTML = noOfDevices;
-//});
 
 var startAgainButton = document.getElementById('startAgain');
 
