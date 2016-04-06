@@ -89,7 +89,7 @@ ipcRenderer.on('files', function (event, files) {
 ipcRenderer.on('devices', function (event, noOfDevices) {
   devices = noOfDevices;
   // document.getElementById('noOfDevices').innerHTML = noOfDevices;
-})
+});
 
 var startAgainButton = document.getElementById('startAgain');
 
@@ -99,4 +99,9 @@ startAgainButton.addEventListener('click', function (event) {
   document.getElementById('showFilesDirPath').value = "";
   document.getElementById('outputDirPath').value = "";
   document.getElementById('loginPage').style.display = "block";
+});
+
+
+ipcRenderer.on('test', function (event, arg) {
+  console.log(arg);
 });

@@ -11,7 +11,7 @@ var path = require('path');
 var R = require('ramda');
 var Immutable = require('immutable');
 
-var testDataDir = 'C:\\Users\\robertph\\code\\projects\\cisco-clerk\\test_data' // path.join('..', 'test_data');
+//var testDataDir = 'C:\\Users\\robertph\\code\\projects\\cisco-clerk\\test_data' // path.join('..', 'test_data');
 var hostnameRegex = /(\S+)\#sh[ow\s]+ver.*/;
 var serialNumberRegex = /[Ss]ystem\s+[Ss]erial\s+[Nn]umber\s+:\s([\w]+)/g;
 var modelSoftwareRegex = /([\w-]+)\s+(\d{2}\.[\w\.)?(?]+)\s+(\w+[-|_][\w-]+\-[\w]+)/g;
@@ -85,8 +85,9 @@ function fetchModelAndSoftware(fileContent) {
   return allModelSoftwareArray;
 }
 
-function parseFile(fileName) {
-  fileName = path.join(testDataDir, fileName);
+function parseFile(fileName, dir) {
+  console.log(dir);
+  fileName = path.join(dir, fileName);
   var fileContent = fs.readFileSync(fileName, 'utf8');
 
   var hostname = fetchHostname(fileContent);
@@ -130,12 +131,14 @@ ipcMain.on('build', function (event, showFilesDir, outputDir, inventoryFilename)
     var output = "Hostname,Serial Number,Model,Software Version,Software Image\n";
     fs.readdirSync(dirString).map(function(file) {
       files.push(file);
-      parseFile(file).map(function(device) {
+      console.log(dirString);
+      parseFile(file, dirString).map(function(device) {
         noOfDevices += 1;
         output += device;
         output += "\n"
       });
     });
+    mainWindow.webContents.send('test', "web contents");
     event.sender.send('devices', noOfDevices);
     event.sender.send('files', files);
     return output;
