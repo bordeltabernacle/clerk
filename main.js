@@ -112,16 +112,6 @@ function parseFile(fileName, dir) {
 }
 
 // Loop through test Data directory
-
-
-function writeDataToCSV(content, outputDir, filename) {
-  var outputPath = outputDir || __dirname;
-  var fullPathFilename = path.resolve(outputPath, filename) + ".csv";
-  fs.writeFileSync(fullPathFilename, content);
-}
-
-ipcMain.on('build', function (event, showFilesDir, outputDir, inventoryFilename) {
-
   function buildData(dir) {
     var files = [];
     var noOfDevices = 0;
@@ -135,13 +125,19 @@ ipcMain.on('build', function (event, showFilesDir, outputDir, inventoryFilename)
         output += "\n"
       });
     });
-    //mainWindow.webContents.send('test', "web contents");
-    event.sender.send('devices', noOfDevices);
-    event.sender.send('files', files);
+    mainWindow.webContents.send('devices', noOfDevices);
+    mainWindow.webContents.send('files', files);
     return output;
   };
 
-  var result = buildData(showFilesDir, event);
+function writeDataToCSV(content, outputDir, filename) {
+  var outputPath = outputDir || __dirname;
+  var fullPathFilename = path.resolve(outputPath, filename) + ".csv";
+  fs.writeFileSync(fullPathFilename, content);
+}
+
+ipcMain.on('build', function (event, showFilesDir, outputDir, inventoryFilename) {
+  var result = buildData(showFilesDir);
   var fullFilePath = path.resolve(outputDir, inventoryFilename);
   writeDataToCSV(result, outputDir, inventoryFilename);
   event.sender.send('result', result, fullFilePath);
