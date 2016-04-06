@@ -11,7 +11,6 @@ var path = require('path');
 var R = require('ramda');
 var Immutable = require('immutable');
 
-//var testDataDir = 'C:\\Users\\robertph\\code\\projects\\cisco-clerk\\test_data' // path.join('..', 'test_data');
 var hostnameRegex = /(\S+)\#sh[ow\s]+ver.*/;
 var serialNumberRegex = /[Ss]ystem\s+[Ss]erial\s+[Nn]umber\s+:\s([\w]+)/g;
 var modelSoftwareRegex = /([\w-]+)\s+(\d{2}\.[\w\.)?(?]+)\s+(\w+[-|_][\w-]+\-[\w]+)/g;
@@ -86,7 +85,6 @@ function fetchModelAndSoftware(fileContent) {
 }
 
 function parseFile(fileName, dir) {
-  console.log(dir);
   fileName = path.join(dir, fileName);
   var fileContent = fs.readFileSync(fileName, 'utf8');
 
@@ -131,7 +129,6 @@ ipcMain.on('build', function (event, showFilesDir, outputDir, inventoryFilename)
     var output = "Hostname,Serial Number,Model,Software Version,Software Image\n";
     fs.readdirSync(dirString).map(function(file) {
       files.push(file);
-      console.log(dirString);
       parseFile(file, dirString).map(function(device) {
         noOfDevices += 1;
         output += device;
