@@ -1,55 +1,52 @@
-'use strict';
-
 const electron = require('electron');
 // Module to control application life.
 const app = electron.app;
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
 const ipcMain = require('electron').ipcMain;
-var fs = require('fs');
-var path = require('path');
-var R = require('ramda');
-var Immutable = require('immutable');
+const fs = require('fs');
+const path = require('path');
+const Immutable = require('immutable');
 
-var hostnameRegex = /(\S+)\#sh[ow\s]+ver.*/;
-var serialNumberRegex = /[Ss]ystem\s+[Ss]erial\s+[Nn]umber\s+:\s([\w]+)/g;
-var modelSoftwareRegex = /([\w-]+)\s+(\d{2}\.[\w\.)?(?]+)\s+(\w+[-|_][\w-]+\-[\w]+)/g;
+const hostnameRegex = /(\S+)#sh[ow\s]+ver.*/;
+const serialNumberRegex = /[Ss]ystem\s+[Ss]erial\s+[Nn]umber\s+:\s([\w]+)/g;
+const modelSoftwareRegex = /([\w-]+)\s+(\d{2}\.[\w\.)?(?]+)\s+(\w+[-|_][\w-]+\-[\w]+)/g;
 
-var noOfFiles;
-var noOfDevices;
+let noOfFiles;
+let noOfDevices;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-var mainWindow = null;
+let mainWindow = null;
 
 // Quit when all windows are closed.
-app.on('window-all-closed', function() {
+app.on('window-all-closed', () => {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform != 'darwin') {
+  if (process.platform !== 'darwin') {
     app.quit();
   }
 });
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
-app.on('ready', function() {
+app.on('ready', () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     center: true,
     resizable: false,
-    autoHideMenuBar: true
+    autoHideMenuBar: true,
   });
 
   // and load the index.html of the app.
-  mainWindow.loadURL('file://' + __dirname + '/index.html');
+  mainWindow.loadURL(path.join('file://', __dirname, 'index.html'));
 
   // mainWindow.openDevTools();
 
   // Emitted when the window is closed.
-  mainWindow.on('closed', function() {
+  mainWindow.on('closed', () => {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
@@ -59,52 +56,52 @@ app.on('ready', function() {
 
 function fetchHostname(fileContent) {
   return hostnameRegex.exec(fileContent)[1];
-};
+}
 
 function fetchSerialNumbers(fileContent) {
-  var serialNumberArray = [];
-  var serialNumberMatch;
+  const serialNumberArray = [];
+  let serialNumberMatch;
 
   while (serialNumberMatch = serialNumberRegex.exec(fileContent)) {
     serialNumberArray.push(serialNumberMatch[1]);
-  };
+  }
 
   return serialNumberArray;
-};
+}
 
 function fetchModelAndSoftware(fileContent) {
-  var allModelSoftwareArray = [];
-  var modelSoftwareMatch;
+  const allModelSoftwareArray = [];
+  let modelSoftwareMatch;
 
   while (modelSoftwareMatch = modelSoftwareRegex.exec(fileContent)) {
-    var eachModelSoftwareArray = [];
+    const eachModelSoftwareArray = [];
     eachModelSoftwareArray.push(modelSoftwareMatch[1]);
     eachModelSoftwareArray.push(modelSoftwareMatch[2]);
     eachModelSoftwareArray.push(modelSoftwareMatch[3]);
     allModelSoftwareArray.push(eachModelSoftwareArray);
-  };
+  }
 
   return allModelSoftwareArray;
 }
 
-function parseFile(fileName, dir) {
-  fileName = path.join(dir, fileName);
-  var fileContent = fs.readFileSync(fileName, 'utf8');
+function parseFile(fin, dir) {
+  const fileName = path.join(dir, fin);
+  const fileContent = fs.readFileSync(fileName, 'utf8');
 
-  var hostname = fetchHostname(fileContent);
-  var serialNumbers = fetchSerialNumbers(fileContent);
-  var modelAndSoftware = fetchModelAndSoftware(fileContent);
+  const hostname = fetchHostname(fileContent);
+  const serialNumbers = fetchSerialNumbers(fileContent);
+  const modelAndSoftware = fetchModelAndSoftware(fileContent);
 
-  var deviceList = [];
+  const deviceList = [];
 
-  var i = 0;
+  let i = 0;
   while (i < serialNumbers.length) {
-    var device = Immutable.List([
+    const device = new Immutable.List([
       hostname,
       serialNumbers[i],
       modelAndSoftware[i][0],
       modelAndSoftware[i][1],
-      modelAndSoftware[i][2]
+      modelAndSoftware[i][2],
     ]);
 
     deviceList.push(device.join());
@@ -115,37 +112,37 @@ function parseFile(fileName, dir) {
 }
 
 // Loop through test Data directory
-  function buildData(dir) {
-    var start = new Date().getTime();
-    var files = [];
-    noOfDevices = 0;
-    var dirString = String(dir);
-    var output = "Hostname,Serial Number,Model,Software Version,Software Image\n";
-    fs.readdirSync(dirString).map(function(file) {
-      files.push(file);
-      parseFile(file, dirString).map(function(device) {
-        noOfDevices += 1;
-        output += device;
-        output += "\n"
-      });
+function buildData(dir) {
+  const start = new Date().getTime();
+  const files = [];
+  noOfDevices = 0;
+  const dirString = String(dir);
+  let output = 'Hostname,Serial Number,Model,Software Version,Software Image\n';
+  fs.readdirSync(dirString).map((file) => {
+    files.push(file);
+    parseFile(file, dirString).map((device) => {
+      noOfDevices += 1;
+      output += device;
+      output += '\n';
     });
-    noOfFiles = files.length;
-    //noOfDevices = noOfDevices;
-    var end = new Date().getTime();
-    var timeTaken = end - start;
-    mainWindow.webContents.send('stats', noOfFiles, noOfDevices, timeTaken);
-    return output;
-  };
+  });
+  noOfFiles = files.length;
+  const end = new Date().getTime();
+  const timeTaken = end - start;
+  mainWindow.webContents.send('stats', noOfFiles, noOfDevices, timeTaken);
+  return output;
+}
 
 function writeDataToCSV(content, outputDir, filename) {
-  var outputPath = outputDir || __dirname;
-  var fullPathFilename = path.resolve(outputPath, filename) + ".csv";
+  const fileWithExt = filename + '.csv';
+  const outputPath = outputDir || __dirname;
+  const fullPathFilename = path.resolve(outputPath, filename + '.csv');
   fs.writeFileSync(fullPathFilename, content);
 }
 
-ipcMain.on('build', function (event, showFilesDir, outputDir, inventoryFilename) {
-  var result = buildData(showFilesDir);
-  var fullFilePath = path.resolve(outputDir, inventoryFilename);
+ipcMain.on('build', (event, showFilesDir, outputDir, inventoryFilename) => {
+  const result = buildData(showFilesDir);
+  const fullFilePath = path.resolve(outputDir, inventoryFilename);
   writeDataToCSV(result, outputDir, inventoryFilename);
   event.sender.send('result', result, fullFilePath, noOfFiles, noOfDevices);
 });

@@ -27,8 +27,8 @@ loginPageContinueButton.addEventListener('click', function(event) {
     localStorage.btEmail = document.getElementById('btEmailInput').value;
     projectName = document.getElementById('projectNameInput').value;
     user = document.getElementById('btEmailInput').value;
-    d = new Date()
-    var defaultFilename = projectName.replace(/ /g,"_") + "_inventory_" + d.getFullYear() + (d.getMonth() + 1) + d.getDate() + d.getHours() + d.getMinutes() + d.getSeconds();
+    d = new Date();
+    var defaultFilename = projectName.replace(/ /g, "_") + "_inventory_" + d.getFullYear() + (d.getMonth() + 1) + d.getDate() + d.getHours() + d.getMinutes() + d.getSeconds();
     document.getElementById('inventoryFilename').value = defaultFilename;
     document.getElementById('alertMessage').style.visibility = "hidden";
     document.getElementById('loginPage').style.display = "none";
@@ -39,29 +39,33 @@ loginPageContinueButton.addEventListener('click', function(event) {
 var showFilesDirButton = document.getElementById('showFilesDirSelect');
 var outputDirButton = document.getElementById('outputDirSelect');
 
-showFilesDirButton.addEventListener('click', function (event) {
-  var showFilesDir = dialog.showOpenDialog({ properties: ['openDirectory'] });
+showFilesDirButton.addEventListener('click', function(event) {
+  var showFilesDir = dialog.showOpenDialog({
+    properties: ['openDirectory']
+  });
   document.getElementById('showFilesDirPath').value = showFilesDir;
   //ipcRenderer.send('build', showFilesDir);
 });
 
-outputDirButton.addEventListener('click', function (event) {
-  var outputDir = dialog.showOpenDialog({ properties: ['openDirectory'] });
+outputDirButton.addEventListener('click', function(event) {
+  var outputDir = dialog.showOpenDialog({
+    properties: ['openDirectory']
+  });
   document.getElementById('outputDirPath').value = outputDir;
-    //ipcRenderer.send('build', showFilesDir);
+  //ipcRenderer.send('build', showFilesDir);
 })
 
 var buildButton = document.getElementById('build');
 
-buildButton.addEventListener('click', function (event) {
+buildButton.addEventListener('click', function(event) {
   var showFilesDirPath = document.getElementById('showFilesDirPath').value;
   var outputDirPath = document.getElementById('outputDirPath').value;
-  var inventoryFilename = document.getElementById('inventoryFilename').value.replace(/ /g,"_");
+  var inventoryFilename = document.getElementById('inventoryFilename').value.replace(/ /g, "_");
   document.getElementById('inputForm').style.display = "none";
   ipcRenderer.send('build', showFilesDirPath, outputDirPath, inventoryFilename);
 });
 
-ipcRenderer.on('result', function (event, result, inventoryFilename, noOfFiles, noOfDevices) {
+ipcRenderer.on('result', function(event, result, inventoryFilename, noOfFiles, noOfDevices) {
   document.getElementById('resultMessage').style.display = "block";
   document.getElementById('msg').innerHTML = '<b>' + inventoryFilename + ".csv</b>";
   t2 = performance.now();
@@ -76,7 +80,7 @@ ipcRenderer.on('result', function (event, result, inventoryFilename, noOfFiles, 
   });
 });
 
-ipcRenderer.on('stats', function (event, noOfFiles, noOfDevices, timeTaken) {
+ipcRenderer.on('stats', function(event, noOfFiles, noOfDevices, timeTaken) {
   output = '<p><b>' + noOfFiles + '</b> files and <b>' +
     noOfDevices + '</b> devices processed in <b>' +
     timeTaken + 'ms</b>.</p>';
@@ -85,7 +89,7 @@ ipcRenderer.on('stats', function (event, noOfFiles, noOfDevices, timeTaken) {
 
 var startAgainButton = document.getElementById('startAgain');
 
-startAgainButton.addEventListener('click', function (event) {
+startAgainButton.addEventListener('click', function(event) {
   document.getElementById('alertMessage').style.visibility = "hidden";
   document.getElementById('resultMessage').style.display = "none";
   document.getElementById('showFilesDirPath').value = "";
