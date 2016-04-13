@@ -1,108 +1,106 @@
-require('bootstrap');
-const ipcRenderer = require('electron').ipcRenderer;
-const remote = require('electron').remote;
-const dialog = remote.require('dialog');
-const Firebase = require('firebase');
-const clerkFirebase = new Firebase('https://clerk.firebaseio.com/');
+ // *******************************************************
+ // * Copyright (C) BT - All Rights Reservedrob.phoenix@bt.com
+ // * Unauthorized copying of this file, via any medium is strictly prohibited
+ // * Proprietary and confidential
+ // * Written by Rob Phoenix <rob.phoenix@bt.com>, 2016
+ // *******************************************************
 
-// var timeTaken;
+ require('bootstrap');
+ const ipcRenderer = require('electron').ipcRenderer;
+ const remote = require('electron').remote;
+ const dialog = remote.require('dialog');
+ const Firebase = require('firebase');
+ const clerkFirebase = new Firebase('https://clerk.firebaseio.com/');
 
-document.getElementById('btEmailInput')
-  .value = localStorage.btEmail;
+ // var timeTaken;
 
-document.getElementById('loginPageContinue')
-  .addEventListener('click', (event) => {
+ document.getElementById('btEmailInput').value = localStorage.btEmail;
 
-    t1 = performance.now();
+ document.getElementById('loginPageContinue').addEventListener('click', (event) => {
+   t1 = performance.now();
+   const btEmailInputValue = document.getElementById('btEmailInput').value;
+   const projectNameInputValue = document.getElementById('projectNameInput').value;
+   if (btEmailInputValue === '' && projectNameInputValue === '') {
+     document.getElementById('alertMessage').innerHTML = 'Please Enter your BT Email Address and a Project name.';
+     document.getElementById('alertMessage').style.visibility = 'visible';
+   } else if (btEmailInputValue === '') {
+     document.getElementById('alertMessage').innerHTML = 'Please Enter your BT Email Address.';
+     document.getElementById('alertMessage').style.visibility = 'visible';
+   } else if (projectNameInputValue === '') {
+     document.getElementById('alertMessage').innerHTML = 'Please Enter a Project name.';
+     document.getElementById('alertMessage').style.visibility = 'visible';
+   } else {
+     localStorage.btEmail = document.getElementById('btEmailInput').value;
+     projectName = document.getElementById('projectNameInput').value.replace(/ /g, '_');
+     user = document.getElementById('btEmailInput').value;
+     d = new Date();
+     const defaultFilename = projectName + '_inventory_' + d.getFullYear() + (d.getMonth() + 1) + d.getDate() + d.getHours() + d.getMinutes() + d.getSeconds();
+     document.getElementById('inventoryFilename').value = defaultFilename;
+     document.getElementById('alertMessage').style.visibility = 'hidden';
+     document.getElementById('loginPage').style.display = 'none';
+     document.getElementById('inputForm').style.display = 'block';
+   }
+ });
 
-    const btEmailInputValue = document.getElementById('btEmailInput').value;
+ document.getElementById('showFilesDirSelect').addEventListener('click', (event) => {
+   const showFilesDir = dialog.showOpenDialog({
+     properties: ['openDirectory'],
+   });
+   document.getElementById('showFilesDirPath').value = showFilesDir;
+   // ipcRenderer.send('build', showFilesDir);
+ });
 
-    const projectNameInputValue = document.getElementById('projectNameInput').value;
+ document.getElementById('outputDirSelect').addEventListener('click', (event) => {
+   const outputDir = dialog.showOpenDialog({
+     properties: ['openDirectory'],
+   });
+   document.getElementById('outputDirPath').value = outputDir;
+   // ipcRenderer.send('build', showFilesDir);
+ })
 
-    if (btEmailInputValue === '' && projectNameInputValue === '') {
-      document.getElementById('alertMessage').innerHTML = 'Please Enter your BT Email Address and a Project name.';
-      document.getElementById('alertMessage').style.visibility = 'visible';
-    } else if (btEmailInputValue === '') {
-      document.getElementById('alertMessage').innerHTML = 'Please Enter your BT Email Address.';
-      document.getElementById('alertMessage').style.visibility = 'visible';
-    } else if (projectNameInputValue === '') {
-      document.getElementById('alertMessage').innerHTML = 'Please Enter a Project name.';
-      document.getElementById('alertMessage').style.visibility = 'visible';
-    } else {
-      localStorage.btEmail = document.getElementById('btEmailInput').value;
-      projectName = document.getElementById('projectNameInput').value;
-      user = document.getElementById('btEmailInput').value;
-      d = new Date();
-      const defaultFilename = '${projectName.replace(/ /g, "_")}${_inventory_}${d.getFullYear()}${(d.getMonth() + 1)}${d.getDate()}${d.getHours()}${d.getMinutes()}${d.getSeconds()}';
-      document.getElementById('inventoryFilename').value = defaultFilename;
-      document.getElementById('alertMessage').style.visibility = 'hidden';
-      document.getElementById('loginPage').style.display = 'none';
-      document.getElementById('inputForm').style.display = 'block';
-    };
-  });
+ const buildButton = document.getElementById('build');
 
-var showFilesDirButton = document.getElementById('showFilesDirSelect');
-var outputDirButton = document.getElementById('outputDirSelect');
+ buildButton.addEventListener('click', (event) => {
+   const showFilesDirPath = document.getElementById('showFilesDirPath').value;
+   const outputDirPath = document.getElementById('outputDirPath').value;
+   const inventoryFilename = document.getElementById('inventoryFilename').value.replace(/ /g, "_");
+   document.getElementById('inputForm').style.display = "none";
+   ipcRenderer.send('build', showFilesDirPath, outputDirPath, inventoryFilename);
+ });
 
-showFilesDirButton.addEventListener('click', function(event) {
-  var showFilesDir = dialog.showOpenDialog({
-    properties: ['openDirectory']
-  });
-  document.getElementById('showFilesDirPath').value = showFilesDir;
-  //ipcRenderer.send('build', showFilesDir);
-});
+ ipcRenderer.on('result', function(event, result, inventoryFilename, noOfFiles, noOfDevices) {
+   document.getElementById('resultMessage').style.display = "block";
+   document.getElementById('msg').innerHTML = '<b>' + inventoryFilename + ".csv</b>";
+   t2 = performance.now();
+   const timeTaken = parseFloat((t2 - t1) / 1000).toFixed(2);
+   clerkFirebase.push({
+     date: String(new Date()),
+     user: user,
+     project: projectName,
+     files: noOfFiles,
+     devices: noOfDevices,
+     time: timeTaken
+   });
+ });
 
-outputDirButton.addEventListener('click', function(event) {
-  var outputDir = dialog.showOpenDialog({
-    properties: ['openDirectory']
-  });
-  document.getElementById('outputDirPath').value = outputDir;
-  //ipcRenderer.send('build', showFilesDir);
-})
+ ipcRenderer.on('stats', function(event, noOfFiles, noOfDevices, timeTaken) {
+   output = '<p><b>' + noOfFiles + '</b> files and <b>' +
+     noOfDevices + '</b> devices processed in <b>' +
+     timeTaken + 'ms</b>.</p>';
+   document.getElementById('stats').innerHTML = output;
+ });
 
-var buildButton = document.getElementById('build');
+ var startAgainButton = document.getElementById('startAgain');
 
-buildButton.addEventListener('click', function(event) {
-  var showFilesDirPath = document.getElementById('showFilesDirPath').value;
-  var outputDirPath = document.getElementById('outputDirPath').value;
-  var inventoryFilename = document.getElementById('inventoryFilename').value.replace(/ /g, "_");
-  document.getElementById('inputForm').style.display = "none";
-  ipcRenderer.send('build', showFilesDirPath, outputDirPath, inventoryFilename);
-});
-
-ipcRenderer.on('result', function(event, result, inventoryFilename, noOfFiles, noOfDevices) {
-  document.getElementById('resultMessage').style.display = "block";
-  document.getElementById('msg').innerHTML = '<b>' + inventoryFilename + ".csv</b>";
-  t2 = performance.now();
-  const timeTaken = parseFloat((t2 - t1) / 1000).toFixed(2);
-  clerkFirebase.push({
-    date: String(new Date()),
-    user: user,
-    project: projectName,
-    files: noOfFiles,
-    devices: noOfDevices,
-    time: timeTaken
-  });
-});
-
-ipcRenderer.on('stats', function(event, noOfFiles, noOfDevices, timeTaken) {
-  output = '<p><b>' + noOfFiles + '</b> files and <b>' +
-    noOfDevices + '</b> devices processed in <b>' +
-    timeTaken + 'ms</b>.</p>';
-  document.getElementById('stats').innerHTML = output;
-});
-
-var startAgainButton = document.getElementById('startAgain');
-
-startAgainButton.addEventListener('click', function(event) {
-  document.getElementById('alertMessage').style.visibility = "hidden";
-  document.getElementById('resultMessage').style.display = "none";
-  document.getElementById('showFilesDirPath').value = "";
-  document.getElementById('outputDirPath').value = "";
-  document.getElementById('loginPage').style.display = "block";
-});
+ startAgainButton.addEventListener('click', function(event) {
+   document.getElementById('alertMessage').style.visibility = "hidden";
+   document.getElementById('resultMessage').style.display = "none";
+   document.getElementById('showFilesDirPath').value = "";
+   document.getElementById('outputDirPath').value = "";
+   document.getElementById('loginPage').style.display = "block";
+ });
 
 
-//ipcRenderer.on('test', function (event, arg) {
-//  console.log(arg);
-//});
+ //ipcRenderer.on('test', function (event, arg) {
+ //  console.log(arg);
+ //});
