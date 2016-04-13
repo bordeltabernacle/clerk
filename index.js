@@ -96,3 +96,5 @@
    document.getElementById('outputDirPath').value = '';
    document.getElementById('loginPage').style.display = 'block';
  });
+
+ // test
