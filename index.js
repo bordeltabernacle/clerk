@@ -2,39 +2,44 @@ require('bootstrap');
 const ipcRenderer = require('electron').ipcRenderer;
 const remote = require('electron').remote;
 const dialog = remote.require('dialog');
-var Firebase = require("firebase");
-var clerkFirebase = new Firebase("https://clerk.firebaseio.com/");
+const Firebase = require('firebase');
+const clerkFirebase = new Firebase('https://clerk.firebaseio.com/');
 
-//var timeTaken;
+// var timeTaken;
 
-document.getElementById('btEmailInput').value = localStorage.btEmail;
+document.getElementById('btEmailInput')
+  .value = localStorage.btEmail;
 
-var loginPageContinueButton = document.getElementById('loginPageContinue');
-loginPageContinueButton.addEventListener('click', function(event) {
-  t1 = performance.now();
-  var btEmailInputValue = document.getElementById('btEmailInput').value;
-  var projectNameInputValue = document.getElementById('projectNameInput').value;
-  if (btEmailInputValue == "" && projectNameInputValue == "") {
-    document.getElementById('alertMessage').innerHTML = "Please Enter your BT Email Address and a Project name.";
-    document.getElementById('alertMessage').style.visibility = "visible";
-  } else if (btEmailInputValue == "") {
-    document.getElementById('alertMessage').innerHTML = "Please Enter your BT Email Address.";
-    document.getElementById('alertMessage').style.visibility = "visible";
-  } else if (projectNameInputValue == "") {
-    document.getElementById('alertMessage').innerHTML = "Please Enter a Project name.";
-    document.getElementById('alertMessage').style.visibility = "visible";
-  } else {
-    localStorage.btEmail = document.getElementById('btEmailInput').value;
-    projectName = document.getElementById('projectNameInput').value;
-    user = document.getElementById('btEmailInput').value;
-    d = new Date();
-    var defaultFilename = projectName.replace(/ /g, "_") + "_inventory_" + d.getFullYear() + (d.getMonth() + 1) + d.getDate() + d.getHours() + d.getMinutes() + d.getSeconds();
-    document.getElementById('inventoryFilename').value = defaultFilename;
-    document.getElementById('alertMessage').style.visibility = "hidden";
-    document.getElementById('loginPage').style.display = "none";
-    document.getElementById('inputForm').style.display = "block";
-  };
-});
+document.getElementById('loginPageContinue')
+  .addEventListener('click', (event) => {
+
+    t1 = performance.now();
+
+    const btEmailInputValue = document.getElementById('btEmailInput').value;
+
+    const projectNameInputValue = document.getElementById('projectNameInput').value;
+
+    if (btEmailInputValue === '' && projectNameInputValue === '') {
+      document.getElementById('alertMessage').innerHTML = 'Please Enter your BT Email Address and a Project name.';
+      document.getElementById('alertMessage').style.visibility = 'visible';
+    } else if (btEmailInputValue === '') {
+      document.getElementById('alertMessage').innerHTML = 'Please Enter your BT Email Address.';
+      document.getElementById('alertMessage').style.visibility = 'visible';
+    } else if (projectNameInputValue === '') {
+      document.getElementById('alertMessage').innerHTML = 'Please Enter a Project name.';
+      document.getElementById('alertMessage').style.visibility = 'visible';
+    } else {
+      localStorage.btEmail = document.getElementById('btEmailInput').value;
+      projectName = document.getElementById('projectNameInput').value;
+      user = document.getElementById('btEmailInput').value;
+      d = new Date();
+      const defaultFilename = '${projectName.replace(/ /g, "_")}${_inventory_}${d.getFullYear()}${(d.getMonth() + 1)}${d.getDate()}${d.getHours()}${d.getMinutes()}${d.getSeconds()}';
+      document.getElementById('inventoryFilename').value = defaultFilename;
+      document.getElementById('alertMessage').style.visibility = 'hidden';
+      document.getElementById('loginPage').style.display = 'none';
+      document.getElementById('inputForm').style.display = 'block';
+    };
+  });
 
 var showFilesDirButton = document.getElementById('showFilesDirSelect');
 var outputDirButton = document.getElementById('outputDirSelect');
