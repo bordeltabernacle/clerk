@@ -33,8 +33,9 @@
      localStorage.btEmail = document.getElementById('btEmailInput').value;
      projectName = document.getElementById('projectNameInput').value.replace(/ /g, '_');
      user = document.getElementById('btEmailInput').value;
-     d = new Date();
-     const defaultFilename = projectName + '_inventory_' + d.getFullYear() + (d.getMonth() + 1) + d.getDate() + d.getHours() + d.getMinutes() + d.getSeconds();
+     const d = new Date();
+     const [y, m, date, h, min, s] = [d.getFullYear(), (d.getMonth() + 1), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()];
+     const defaultFilename = `${projectName}_inventory_${y}${m}${date}${h}${min}${s}`;
      document.getElementById('inventoryFilename').value = defaultFilename;
      document.getElementById('alertMessage').style.visibility = 'hidden';
      document.getElementById('loginPage').style.display = 'none';
@@ -56,21 +57,21 @@
    });
    document.getElementById('outputDirPath').value = outputDir;
    // ipcRenderer.send('build', showFilesDir);
- })
+ });
 
  const buildButton = document.getElementById('build');
 
  buildButton.addEventListener('click', (event) => {
    const showFilesDirPath = document.getElementById('showFilesDirPath').value;
    const outputDirPath = document.getElementById('outputDirPath').value;
-   const inventoryFilename = document.getElementById('inventoryFilename').value.replace(/ /g, "_");
-   document.getElementById('inputForm').style.display = "none";
+   const inventoryFilename = document.getElementById('inventoryFilename').value.replace(/ /g, '_');
+   document.getElementById('inputForm').style.display = 'none';
    ipcRenderer.send('build', showFilesDirPath, outputDirPath, inventoryFilename);
  });
 
- ipcRenderer.on('result', function(event, result, inventoryFilename, noOfFiles, noOfDevices) {
-   document.getElementById('resultMessage').style.display = "block";
-   document.getElementById('msg').innerHTML = '<b>' + inventoryFilename + ".csv</b>";
+ ipcRenderer.on('result', (event, result, inventoryFilename, noOfFiles, noOfDevices) => {
+   document.getElementById('resultMessage').style.display = 'block';
+   document.getElementById('msg').innerHTML = `<b>${inventoryFilename}.csv</b>`;
    t2 = performance.now();
    const timeTaken = parseFloat((t2 - t1) / 1000).toFixed(2);
    clerkFirebase.push({
@@ -79,28 +80,19 @@
      project: projectName,
      files: noOfFiles,
      devices: noOfDevices,
-     time: timeTaken
+     time: timeTaken,
    });
  });
 
- ipcRenderer.on('stats', function(event, noOfFiles, noOfDevices, timeTaken) {
-   output = '<p><b>' + noOfFiles + '</b> files and <b>' +
-     noOfDevices + '</b> devices processed in <b>' +
-     timeTaken + 'ms</b>.</p>';
-   document.getElementById('stats').innerHTML = output;
+ ipcRenderer.on('stats', (event, noOfFiles, noOfDevices, timeTaken) => {
+   document.getElementById('stats').innerHTML =
+     `<p><b>${noOfFiles}</b> files and <b>${noOfDevices}</b> devices processed in <b>${timeTaken}ms</b>.</p>`;
  });
 
- var startAgainButton = document.getElementById('startAgain');
-
- startAgainButton.addEventListener('click', function(event) {
-   document.getElementById('alertMessage').style.visibility = "hidden";
-   document.getElementById('resultMessage').style.display = "none";
-   document.getElementById('showFilesDirPath').value = "";
-   document.getElementById('outputDirPath').value = "";
-   document.getElementById('loginPage').style.display = "block";
+ document.getElementById('startAgain').addEventListener('click', (event) => {
+   document.getElementById('alertMessage').style.visibility = 'hidden';
+   document.getElementById('resultMessage').style.display = 'none';
+   document.getElementById('showFilesDirPath').value = '';
+   document.getElementById('outputDirPath').value = '';
+   document.getElementById('loginPage').style.display = 'block';
  });
-
-
- //ipcRenderer.on('test', function (event, arg) {
- //  console.log(arg);
- //});
