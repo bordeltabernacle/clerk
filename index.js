@@ -14,42 +14,40 @@
 
  document.getElementById('btEmailInput').value = localStorage.btEmail;
 
- document.getElementById('loginPageContinue').addEventListener('click', (event) => {
+ const loginPageSubmit = document.getElementById('loginPageContinue');
+ loginPageSubmit.addEventListener('click', (event) => {
+   const btEmailInput = document.getElementById('btEmailInput');
+   const projectNameInput = document.getElementById('projectNameInput');
+   const projectRefInput = document.getElementById('projectRefInput');
+   const alertMessage = document.getElementById('alertMessage');
+   alertMessage.innerHTML = '';
    t1 = performance.now();
-   const btEmailInputValue = document.getElementById('btEmailInput').value;
-   const alertEmail = document.getElementById('alertEmail');
-   const projectNameInputValue = document.getElementById('projectNameInput').value;
-   const alertProjectName = document.getElementById('alertProjectName');
-   const projectRefInputValue = document.getElementById('projectRefInput').value;
-   const alertProjectRef = document.getElementById('alertProjectRef');
-   if (btEmailInputValue === '') {
-     alertEmail.innerHTML = 'Please Enter your BT Email Address';
-     alertEmail.style.display = 'block';
-     return false;
+   if (btEmailInput.value === '' || projectNameInput.value === '' || projectRefInput.value === '') {
+     if (btEmailInput.value === '') {
+       alertMessage.style.display = 'block';
+       alertMessage.innerHTML += '<li>Please Enter your BT Email Address</li>';
+     }
+     if (projectNameInput.value === '') {
+       alertMessage.style.display = 'block';
+       alertMessage.innerHTML += '<li>Please Enter the Project Name</li>';
+     }
+     if (projectRefInput.value === '') {
+       alertMessage.style.display = 'block';
+       alertMessage.innerHTML += '<li>Please Enter a Project Reference</li>';
+     }
+   } else {
+     localStorage.btEmail = btEmailInput.value;
+     projectName = projectNameInput.value.replace(/ /g, '_');
+     projectRef = projectRefInput.value;
+     user = document.getElementById('btEmailInput').value;
+     const d = new Date();
+     const [y, m, date, h, min, s] = [d.getFullYear(), (d.getMonth() + 1), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()];
+     const defaultFilename = `${projectName}_inventory_${y}${m}${date}${h}${min}${s}`;
+     document.getElementById('inventoryFilename').value = defaultFilename;
+     alertMessage.style.display = 'none';
+     document.getElementById('loginPage').style.display = 'none';
+     document.getElementById('inputForm').style.display = 'block';
    }
-   if (projectNameInputValue === '') {
-     alertProjectName.innerHTML = 'Please Enter the Project Name.';
-     alertProjectName.style.display = 'block';
-     return false;
-   }
-   if (projectRefInputValue === '') {
-     alertProjectRef.innerHTML = 'Please Enter a Project Reference.';
-     alertProjectRef.style.display = 'block';
-     return false;
-   }
-   localStorage.btEmail = btEmailInputValue;
-   projectName = projectNameInputValue.replace(/ /g, '_');
-   projectRef = projectRefInputValue;
-   user = document.getElementById('btEmailInput').value;
-   const d = new Date();
-   const [y, m, date, h, min, s] = [d.getFullYear(), (d.getMonth() + 1), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()];
-   const defaultFilename = `${projectName}_inventory_${y}${m}${date}${h}${min}${s}`;
-   document.getElementById('inventoryFilename').value = defaultFilename;
-   alertEmail.style.display = 'none';
-   alertProjectName.style.display = 'none';
-   alertProjectRef.style.display = 'none';
-   document.getElementById('loginPage').style.display = 'none';
-   document.getElementById('inputForm').style.display = 'block';
  });
 
  document.getElementById('showFilesDirSelect').addEventListener('click', (event) => {

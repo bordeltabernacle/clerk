@@ -58,20 +58,17 @@ body {
   display:none;
 }
 
+#loginPage {
+  margin: 0 auto;
+}
+
 #resultMessage {
-  display:none;
+  display: none;
 }
 
-#alertEmail {
-  display:none;
-}
-
-#alertProjectName {
-  display:none;
-}
-
-#alertProjectRef {
-  display:none;
+#alertMessage {
+  display: none;
+  /*clear: left;*/
 }
 
 #basic-addon2 {
@@ -79,8 +76,8 @@ body {
   color: #55379b;
 }
 
-#projectNameInput {
-  margin-top: 30px;
+#btEmailInput {
+  margin-bottom: 30px;
 }
 
 #main {

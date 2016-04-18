@@ -40,33 +40,45 @@
   <div id="main" class="container">
     <div class="row">
       <div class="center">
-        <div class="col-md-8">
+        <div col-sm-6>
           <!-- LOGIN PAGE -->
           <div id="loginPage">
-            <form>
+            <form class="form-horizontal" id="loginForm">
               <div>
-                <h4>Please Enter your BT Email, Project Name, and Project Reference.</h4>
+                <h4>Please Enter the following information.</h4>
               </div>
-              <div id="alertEmail" class="alert alert-danger" role="alert">
+
+              <div class="form-group">
+              <label for="btEmailInput" class="col-xs-4 control-label">BT Email Address</label>
+              <div class="col-xs-4" data-balloon-length="medium" data-balloon="This must be a valid BT email address." data-balloon-pos="up">
+                <input id="btEmailInput" type="email" class="form-control" placeholder="BT email" pattern="\w+\.(\d\.)?\w+\@bt\.com">
+                </div>
               </div>
-              <div class="input-group" data-balloon-length="medium" data-balloon="You only need to enter the name part of your email address" data-balloon-pos="up">
-                <input id="btEmailInput" type="text" class="form-control" placeholder="BT email" aria-describedby="basic-addon2" pattern="\w+\.(\d\.)?\w+">
-                <span class="input-group-addon" id="basic-addon2">@bt.com</span>
-              </div>
-              <div id="alertProjectName" class="alert alert-danger" role="alert">
-              </div>
-              <div class="form-group" data-balloon-length="medium" data-balloon="This is the project name associated with the Cisco show files you are processing" data-balloon-pos="up">
+
+              <div class="form-group">
+              <label for="projectNameInput" class="col-xs-4 control-label">Project Name</label>
+              <div class="col-xs-4" data-balloon-length="medium" data-balloon="This is the project name associated with the Cisco show files you are processing" data-balloon-pos="up">
                 <input id="projectNameInput" type="text" class="form-control" placeholder="Project Name">
+                </div>
               </div>
-              <div id="alertProjectRef" class="alert alert-danger" role="alert">
-              </div>
-              <div class="form-group" data-balloon-length="medium" data-balloon="This is the project reference associated with the Cisco show files you are processing" data-balloon-pos="down">
+
+              <div class="form-group">
+              <label for="projectRefInput" class="col-xs-4 control-label">Project Reference</label>
+              <div class="col-xs-4" data-balloon-length="medium" data-balloon="This is the project reference associated with the Cisco show files you are processing" data-balloon-pos="down">
                 <input id="projectRefInput" type="text" class="form-control" placeholder="Project Reference">
               </div>
+
+              </div>
+              <div id="alertMessage" class="alert alert-danger" role="alert">
+            <ul>
+
+            </ul>
+            </div>
               <div class="form-group">
                 <button id="loginPageContinue" type="button" class="btn btn-default form-button pull-right">Continue</button>
               </div>
             </form>
+
           </div>
           <!-- INPUT FORM -->
           <div id="inputForm">
