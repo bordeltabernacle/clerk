@@ -12,32 +12,39 @@
  const Firebase = require('firebase');
  const clerkFirebase = new Firebase('https://clerk.firebaseio.com/');
 
- // var timeTaken;
-
  document.getElementById('btEmailInput').value = localStorage.btEmail;
 
- document.getElementById('loginPageContinue').addEventListener('click', (event) => {
+ const loginPageSubmit = document.getElementById('loginPageContinue');
+ loginPageSubmit.addEventListener('click', (event) => {
+   const btEmailInput = document.getElementById('btEmailInput');
+   const projectNameInput = document.getElementById('projectNameInput');
+   const projectRefInput = document.getElementById('projectRefInput');
+   const alertMessage = document.getElementById('alertMessage');
+   alertMessage.innerHTML = '';
    t1 = performance.now();
-   const btEmailInputValue = document.getElementById('btEmailInput').value;
-   const projectNameInputValue = document.getElementById('projectNameInput').value;
-   if (btEmailInputValue === '' && projectNameInputValue === '') {
-     document.getElementById('alertMessage').innerHTML = 'Please Enter your BT Email Address and a Project name.';
-     document.getElementById('alertMessage').style.visibility = 'visible';
-   } else if (btEmailInputValue === '') {
-     document.getElementById('alertMessage').innerHTML = 'Please Enter your BT Email Address.';
-     document.getElementById('alertMessage').style.visibility = 'visible';
-   } else if (projectNameInputValue === '') {
-     document.getElementById('alertMessage').innerHTML = 'Please Enter a Project name.';
-     document.getElementById('alertMessage').style.visibility = 'visible';
+   if (btEmailInput.value === '' || projectNameInput.value === '' || projectRefInput.value === '') {
+     if (btEmailInput.value === '') {
+       alertMessage.style.display = 'block';
+       alertMessage.innerHTML += '<li>Please Enter your BT Email Address</li>';
+     }
+     if (projectNameInput.value === '') {
+       alertMessage.style.display = 'block';
+       alertMessage.innerHTML += '<li>Please Enter the Project Name</li>';
+     }
+     if (projectRefInput.value === '') {
+       alertMessage.style.display = 'block';
+       alertMessage.innerHTML += '<li>Please Enter a Project Reference</li>';
+     }
    } else {
-     localStorage.btEmail = document.getElementById('btEmailInput').value;
-     projectName = document.getElementById('projectNameInput').value.replace(/ /g, '_');
+     localStorage.btEmail = btEmailInput.value;
+     projectName = projectNameInput.value.replace(/ /g, '_');
+     projectRef = projectRefInput.value;
      user = document.getElementById('btEmailInput').value;
      const d = new Date();
      const [y, m, date, h, min, s] = [d.getFullYear(), (d.getMonth() + 1), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()];
      const defaultFilename = `${projectName}_inventory_${y}${m}${date}${h}${min}${s}`;
      document.getElementById('inventoryFilename').value = defaultFilename;
-     document.getElementById('alertMessage').style.visibility = 'hidden';
+     alertMessage.style.display = 'none';
      document.getElementById('loginPage').style.display = 'none';
      document.getElementById('inputForm').style.display = 'block';
    }
@@ -78,6 +85,7 @@
      date: String(new Date()),
      user: user,
      project: projectName,
+     reference: projectRef,
      files: noOfFiles,
      devices: noOfDevices,
      time: timeTaken,
@@ -96,5 +104,3 @@
    document.getElementById('outputDirPath').value = '';
    document.getElementById('loginPage').style.display = 'block';
  });
-
- // test
