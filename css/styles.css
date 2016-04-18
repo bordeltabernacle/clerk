@@ -62,8 +62,16 @@ body {
   display:none;
 }
 
-#alertMessage {
-  visibility: hidden;
+#alertEmail {
+  display:none;
+}
+
+#alertProjectName {
+  display:none;
+}
+
+#alertProjectRef {
+  display:none;
 }
 
 #basic-addon2 {

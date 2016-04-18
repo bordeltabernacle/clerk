@@ -9,6 +9,7 @@
   "main": "main.js",
   "author": "Rob Phoenix <rob.phoenix@bt.com>",
   "scripts": {
+    "start": "electron . --enable-logging",
     "build": "babel src -d build"
   },
   "devDependencies": {

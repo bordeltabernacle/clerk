@@ -44,18 +44,24 @@
           <!-- LOGIN PAGE -->
           <div id="loginPage">
             <form>
-              <div id="alertMessage" class="alert alert-danger" role="alert">
-                .
-              </div>
               <div>
-                <h4>Please Enter your BT Email and a project name.</h4>
+                <h4>Please Enter your BT Email, Project Name, and Project Reference.</h4>
+              </div>
+              <div id="alertEmail" class="alert alert-danger" role="alert">
               </div>
               <div class="input-group" data-balloon-length="medium" data-balloon="You only need to enter the name part of your email address" data-balloon-pos="up">
-                <input id="btEmailInput" type="text" class="form-control" placeholder="BT email" aria-describedby="basic-addon2">
+                <input id="btEmailInput" type="text" class="form-control" placeholder="BT email" aria-describedby="basic-addon2" pattern="\w+\.(\d\.)?\w+">
                 <span class="input-group-addon" id="basic-addon2">@bt.com</span>
               </div>
-              <div class="form-group" data-balloon-length="medium" data-balloon="This is the project name associated with the Cisco show files you are processing" data-balloon-pos="down">
+              <div id="alertProjectName" class="alert alert-danger" role="alert">
+              </div>
+              <div class="form-group" data-balloon-length="medium" data-balloon="This is the project name associated with the Cisco show files you are processing" data-balloon-pos="up">
                 <input id="projectNameInput" type="text" class="form-control" placeholder="Project Name">
+              </div>
+              <div id="alertProjectRef" class="alert alert-danger" role="alert">
+              </div>
+              <div class="form-group" data-balloon-length="medium" data-balloon="This is the project reference associated with the Cisco show files you are processing" data-balloon-pos="down">
+                <input id="projectRefInput" type="text" class="form-control" placeholder="Project Reference">
               </div>
               <div class="form-group">
                 <button id="loginPageContinue" type="button" class="btn btn-default form-button pull-right">Continue</button>
