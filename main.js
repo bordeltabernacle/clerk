@@ -15,12 +15,9 @@
  const path = require('path');
  const Immutable = require('immutable');
 
- const hostnameRegex = /(\S+)#sh[ow\s]+ver.*/;
- const serialNumberRegex = /[Ss]ystem\s+[Ss]erial\s+[Nn]umber\s+:\s([\w]+)/g;
- const modelSoftwareRegex = /([\w-]+)\s+(\d{2}\.[\w\.)?(?]+)\s+(\w+[-|_][\w-]+\-[\w]+)/g;
-
- let noOfFiles;
- let noOfDevices;
+ /**
+  * Electron setup
+  */
 
  // Keep a global reference of the window object, if you don't, the window will
  // be closed automatically when the JavaScript object is garbage collected.
@@ -61,33 +58,74 @@
    });
  });
 
+ /**
+  * Clerk.js functionality
+  */
+
+ /**
+  * [global object to hold stats on number of files & devices processed]
+  * @type {Object}
+  */
+ const processed = {
+   files: 0,
+   devices: 0,
+ };
+
+ /**
+  * Fetches device hostname from fileContent
+  * using a regular expression.
+  * @param  {string} fileContent [contents of show file]
+  * @return {string}             [device hostname]
+  */
  function fetchHostname(fileContent) {
+   // assumes the hostname is the name of the device
+   // before the #show version command, ie.
+   // {{hostname}}# sh ver
+   // we only need one occurrence of it
+   const hostnameRegex = /(\S+)#sh[ow\s]+ver.*/;
+   // the hostname is the second item in
+   // the array returned by .exec
    return hostnameRegex.exec(fileContent)[1];
  }
 
+ /**
+  * Fetches all device serial numbers from fileContent
+  * using a regular expression.
+  * @param  {string} fileContent [contents of show file]
+  * @return {[string,]}          [an array of one or more device serial numbers]
+  */
  function fetchSerialNumbers(fileContent) {
+   const serialNumberRegex = /[Ss]ystem\s+[Ss]erial\s+[Nn]umber\s+:\s([\w]+)/g;
    const serialNumberArray = [];
    let serialNumberMatch;
-
-   while (serialNumberMatch = serialNumberRegex.exec(fileContent)) {
+   // find all occurences of serialNumberRegex
+   while ((serialNumberMatch = serialNumberRegex.exec(fileContent))) {
+     // the serial number is the second item
+     // in the array returned by .exec
      serialNumberArray.push(serialNumberMatch[1]);
    }
-
    return serialNumberArray;
  }
 
+ /**
+  * [Fetches all model numbers, software versions and software images from
+  * fileContent using a regular expression]
+  * @param  {string} fileContent [contents of show file]
+  * @return {[[string,],]}       [an array of one or more arrays, containing
+  *                               model, software version, software image]
+  */
  function fetchModelAndSoftware(fileContent) {
+   const modelSoftwareRegex = /([\w-]+)\s+(\d{2}\.[\w\.)?(?]+)\s+(\w+[-|_][\w-]+\-[\w]+)/g;
    const allModelSoftwareArray = [];
    let modelSoftwareMatch;
 
-   while (modelSoftwareMatch = modelSoftwareRegex.exec(fileContent)) {
+   while ((modelSoftwareMatch = modelSoftwareRegex.exec(fileContent))) {
      const eachModelSoftwareArray = [];
-     eachModelSoftwareArray.push(modelSoftwareMatch[1]);
-     eachModelSoftwareArray.push(modelSoftwareMatch[2]);
-     eachModelSoftwareArray.push(modelSoftwareMatch[3]);
+     eachModelSoftwareArray.push(modelSoftwareMatch[1]); // model
+     eachModelSoftwareArray.push(modelSoftwareMatch[2]); // software version
+     eachModelSoftwareArray.push(modelSoftwareMatch[3]); // software image
      allModelSoftwareArray.push(eachModelSoftwareArray);
    }
-
    return allModelSoftwareArray;
  }
 
@@ -129,15 +167,15 @@
    fs.readdirSync(dirString).map((file) => {
      files.push(file);
      parseFile(file, dirString).map((device) => {
-       noOfDevices += 1;
+       processed.devices += 1;
        output += device;
        output += '\n';
      });
    });
-   noOfFiles = files.length;
+   processed.files = files.length;
    const end = new Date().getTime();
    const timeTaken = end - start;
-   mainWindow.webContents.send('stats', noOfFiles, noOfDevices, timeTaken);
+   mainWindow.webContents.send('stats', processed.files, processed.devices, timeTaken);
    return output;
  }
 
@@ -151,5 +189,6 @@
    const result = buildData(showFilesDir);
    const fullFilePath = path.resolve(outputDir, inventoryFilename);
    writeDataToCSV(result, outputDir, inventoryFilename);
-   event.sender.send('result', result, fullFilePath, noOfFiles, noOfDevices);
+   console.log(typeof processed.files);
+   event.sender.send('result', result, fullFilePath, processed.files, processed.devices);
  });
