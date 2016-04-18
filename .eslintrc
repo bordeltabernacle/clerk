@@ -17,7 +17,7 @@
     "max-len": [2, 500],
     "indent": [2, 2],
     "quotes": [2, "single"],
-    "linebreak-style": [2, "unix"],
+    "linebreak-style": [0, "windows"],
     "semi": [2, "always"],
     "eqeqeq": 2,
     "comma-dangle": 1,
@@ -25,10 +25,13 @@
     "no-debugger": 1,
     "no-extra-semi": 1,
     "no-extra-parens": 1,
-    "no-irregular-whitespace": 0,
-    "no-undef": 0,
-    "no-unused-vars": 0,
+    "no-irregular-whitespace": 1,
+    "no-undef": 1,
+    "no-cond-assign": [1, "except-parens"],
+    "no-unused-vars": 1,
     "semi-spacing": 1,
+    "array-callback-return": 1,
+    "object-shorthand": 1,
     "valid-jsdoc": [
       2, {
         "requireReturn": false
