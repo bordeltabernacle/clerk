@@ -10,7 +10,7 @@
  const app = electron.app;
  // Module to create native browser window.
  const BrowserWindow = electron.BrowserWindow;
- const ipcMain = require('electron').ipcMain;
+ const ipcMain = electron.ipcMain;
  const fs = require('fs');
  const path = require('path');
  const Immutable = require('immutable');
@@ -161,7 +161,6 @@
  function buildData(dir) {
    const start = new Date().getTime();
    const files = [];
-   noOfDevices = 0;
    const dirString = String(dir);
    let output = 'Hostname,Serial Number,Model,Software Version,Software Image\n';
    fs.readdirSync(dirString).map((file) => {
@@ -181,7 +180,7 @@
 
  function writeDataToCSV(content, outputDir, filename) {
    const outputPath = outputDir || __dirname;
-   const fullPathFilename = path.resolve(outputPath, filename + '.csv');
+   const fullPathFilename = path.resolve(outputPath, `${filename}.csv`);
    fs.writeFileSync(fullPathFilename, content);
  }
 
@@ -189,6 +188,5 @@
    const result = buildData(showFilesDir);
    const fullFilePath = path.resolve(outputDir, inventoryFilename);
    writeDataToCSV(result, outputDir, inventoryFilename);
-   console.log(typeof processed.files);
    event.sender.send('result', result, fullFilePath, processed.files, processed.devices);
  });
