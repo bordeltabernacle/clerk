@@ -60,19 +60,6 @@
  });
 
  /**
-  * Clerk.js functionality
-  */
-
- /**
-  * [global object to hold stats on number of files & devices processed]
-  * @type {Object}
-  */
- let processed = Immutable.Map({
-   files: 0,
-   devices: 0,
- });
-
- /**
   * Fetches device hostname from fileContent
   * using a regular expression.
   * @param  {string} fileContent [contents of show file]
@@ -129,12 +116,13 @@
    // find all occurences of modelSoftwareRegex
    while ((modelSoftwareMatch = modelSoftwareRegex.exec(fileContent))) {
      // array to hold results
-     const eachModelSoftwareArray = [];
-     // modelSoftwareMatch is an array, with the first item is the match,
-     // and the next three items are the groups within the match
-     eachModelSoftwareArray.push(modelSoftwareMatch[1]); // model
-     eachModelSoftwareArray.push(modelSoftwareMatch[2]); // software version
-     eachModelSoftwareArray.push(modelSoftwareMatch[3]); // software image
+     const eachModelSoftwareArray = Immutable.List([
+       // modelSoftwareMatch is an array, with the first item is the match,
+       // and the next three items are the groups within the match
+       modelSoftwareMatch[1], // model
+       modelSoftwareMatch[2], // software version
+       modelSoftwareMatch[3], // software image
+     ]);
      allModelSoftwareArray.push(eachModelSoftwareArray);
    }
    return allModelSoftwareArray;
@@ -144,8 +132,8 @@
   * [Parses a device show file for attributes]
   * @param  {string} fin [filename]
   * @param  {string} dir [directory path]
-  * @return {[string,]}  [an array of one or more strings representing
-  *                       a row of comma separated device values]
+  * @return {List<Map<K, V>>}  [an array of one or more maps
+  *                              of device attributes]
   */
  function parseFile(fin, dir) {
    // get the absolute file path
@@ -156,70 +144,65 @@
    const hostname = fetchHostname(fileContent);
    const serialNumbers = fetchSerialNumbers(fileContent);
    const modelAndSoftware = fetchModelAndSoftware(fileContent);
-   // array to hold devices
-   const deviceList = [];
-   // fetchModelAndSoftware can return repeated results, whereas we know
-   // fetch SerialNumbers returns the right number of results,
-   // so we loop through the results of the fetch* functions and add
-   // them to the deviceList array
-   _.forEach(_.range(serialNumbers.length), i => {
+   // fetchModelAndSoftware can return repeated results after intended results,
+   // whereas we know fetch SerialNumbers returns the right number of results,
+   // so mapping over a range constrained by the length of SerialNumbers
+   // we loop through the results of the fetch* functions building up
+   // a list of maps
+   const devices = _.map(_.range(serialNumbers.length), i => {
      if (i === 0) {
-       // create an immutable list with the relevant data
-       const device = new Immutable.List([
-         hostname,
-         serialNumbers[i],
-         modelAndSoftware[i][0], // model
-         modelAndSoftware[i][1], // software version
-         modelAndSoftware[i][2], // software image
-       ]);
-       // join the list into a comma separated string
-       deviceList.push(device.join());
+       return new Immutable.Map({
+         hostname: hostname,
+         serial: serialNumbers[i],
+         model: modelAndSoftware[i].get(0),
+         swVersion: modelAndSoftware[i].get(1),
+         swImage: modelAndSoftware[i].get(2),
+       });
      } else {
-       const device = new Immutable.List([
-         // the hostname will be the same as the first hostname
-         // so it can be blank as it will be referenced in the
-         // preceding row of the csv file
-         '',
-         serialNumbers[i],
-         modelAndSoftware[i][0],
-         modelAndSoftware[i][1],
-         modelAndSoftware[i][2],
-       ]);
-       deviceList.push(device.join());
+       return new Immutable.Map({
+         hostname: '',
+         serial: serialNumbers[i],
+         model: modelAndSoftware[i].get(0),
+         swVersion: modelAndSoftware[i].get(1),
+         swImage: modelAndSoftware[i].get(2),
+       });
      }
    });
-   return deviceList;
+   return devices;
  }
 
  /**
   * [build data from show files directory into the content for a csv file]
   * @param  {string} dir [path to show files directory]
-  * @return {string}     [content for csv file as a single string]
+  * @return {Map<K, V>}  [map containing content for csv file as a single string,
+  *                       number of files & number of devices]
   */
- function buildData(dir) {
-   const inc = x => x + 1;
+ function buildContent(dir) {
    // we need to convert dir from an object to a string
    const dirString = String(dir);
    // define the csv headings as the first line of our csv content
    let output = 'Hostname,Serial Number,Model,Software Version,Software Image\n';
    // get array of filenames in directory
    const files = fs.readdirSync(dirString);
+   let noOfDevices = 0;
    // map over the files
    _.forEach(files, (file) => {
      // update the global count of the number of files processed
-     processed = processed.update('files', inc);
      // get array of devices from parsed file
      const devices = parseFile(file, dirString);
-     console.log(`devices: ${devices.length}`);
+     noOfDevices += devices.length;
      // mapping over the devices, adding each to output string
      _.forEach(devices, (device) => {
        // update the global count of the number of devices processed
-       processed = processed.update('devices', inc);
-       output += device;
-       output += '\n';
+       output += `${device.join()}\n`;
      });
    });
-   return output;
+   const result = new Immutable.Map({
+     content: output,
+     files: files.length,
+     devices: noOfDevices,
+   });
+   return result;
  }
 
  /**
@@ -242,9 +225,9 @@
  // build data and write to csv, then send back stats
  ipcMain.on('build', (event, showFilesDir, outputDir, inventoryFilename) => {
    const start = _.now();
-   const result = buildData(showFilesDir);
+   const result = buildContent(showFilesDir);
    const fullFilePath = path.resolve(outputDir, inventoryFilename);
-   writeDataToCSV(result, outputDir, inventoryFilename);
+   writeDataToCSV(result.get('content'), outputDir, inventoryFilename);
    const end = _.now();
-   event.sender.send('stats', fullFilePath, processed.get('files'), processed.get('devices'), (end - start));
+   event.sender.send('stats', fullFilePath, result.get('files'), result.get('devices'), (end - start));
  });
