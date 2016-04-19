@@ -67,10 +67,10 @@
   * [global object to hold stats on number of files & devices processed]
   * @type {Object}
   */
- const processed = {
+ let processed = Immutable.Map({
    files: 0,
    devices: 0,
- };
+ });
 
  /**
   * Fetches device hostname from fileContent
@@ -197,6 +197,7 @@
   * @return {string}     [content for csv file as a single string]
   */
  function buildData(dir) {
+   const inc = x => x + 1;
    // we need to convert dir from an object to a string
    const dirString = String(dir);
    // define the csv headings as the first line of our csv content
@@ -206,13 +207,14 @@
    // map over the files
    _.forEach(files, (file) => {
      // update the global count of the number of files processed
-     processed.files += 1;
+     processed = processed.update('files', inc);
      // get array of devices from parsed file
      const devices = parseFile(file, dirString);
+     console.log(`devices: ${devices.length}`);
      // mapping over the devices, adding each to output string
      _.forEach(devices, (device) => {
        // update the global count of the number of devices processed
-       processed.devices += 1;
+       processed = processed.update('devices', inc);
        output += device;
        output += '\n';
      });
@@ -244,5 +246,5 @@
    const fullFilePath = path.resolve(outputDir, inventoryFilename);
    writeDataToCSV(result, outputDir, inventoryFilename);
    const end = _.now();
-   event.sender.send('stats', fullFilePath, processed.files, processed.devices, (end - start));
+   event.sender.send('stats', fullFilePath, processed.get('files'), processed.get('devices'), (end - start));
  });
