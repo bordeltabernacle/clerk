@@ -21,7 +21,6 @@
    const projectRefInput = document.getElementById('projectRefInput');
    const alertMessage = document.getElementById('alertMessage');
    alertMessage.innerHTML = '';
-   t1 = performance.now();
    if (btEmailInput.value === '' || projectNameInput.value === '' || projectRefInput.value === '') {
      if (btEmailInput.value === '') {
        alertMessage.style.display = 'block';
@@ -55,7 +54,6 @@
      properties: ['openDirectory'],
    });
    document.getElementById('showFilesDirPath').value = showFilesDir;
-   // ipcRenderer.send('build', showFilesDir);
  });
 
  document.getElementById('outputDirSelect').addEventListener('click', (event) => {
@@ -63,7 +61,6 @@
      properties: ['openDirectory'],
    });
    document.getElementById('outputDirPath').value = outputDir;
-   // ipcRenderer.send('build', showFilesDir);
  });
 
  const buildButton = document.getElementById('build');
@@ -76,11 +73,11 @@
    ipcRenderer.send('build', showFilesDirPath, outputDirPath, inventoryFilename);
  });
 
- ipcRenderer.on('result', (event, result, inventoryFilename, noOfFiles, noOfDevices) => {
+ ipcRenderer.on('stats', (event, inventoryFilename, noOfFiles, noOfDevices, timeTaken) => {
    document.getElementById('resultMessage').style.display = 'block';
    document.getElementById('msg').innerHTML = `<b>${inventoryFilename}.csv</b>`;
-   t2 = performance.now();
-   const timeTaken = parseFloat((t2 - t1) / 1000).toFixed(2);
+   document.getElementById('stats').innerHTML =
+     `<p><b>${noOfFiles}</b> files and <b>${noOfDevices}</b> devices processed in <b>${timeTaken}ms</b>.</p>`;
    clerkFirebase.push({
      date: String(new Date()),
      user: user,
@@ -90,11 +87,6 @@
      devices: noOfDevices,
      time: timeTaken,
    });
- });
-
- ipcRenderer.on('stats', (event, noOfFiles, noOfDevices, timeTaken) => {
-   document.getElementById('stats').innerHTML =
-     `<p><b>${noOfFiles}</b> files and <b>${noOfDevices}</b> devices processed in <b>${timeTaken}ms</b>.</p>`;
  });
 
  document.getElementById('startAgain').addEventListener('click', (event) => {

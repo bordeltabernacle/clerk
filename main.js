@@ -95,8 +95,11 @@
   * @return {[string,]}          [an array of one or more device serial numbers]
   */
  function fetchSerialNumbers(fileContent) {
+   // matches: System serial number            : ANC1111A1AB
    const serialNumberRegex = /[Ss]ystem\s+[Ss]erial\s+[Nn]umber\s+:\s([\w]+)/g;
+   // array to hold all found serial numbers
    const serialNumberArray = [];
+   // define match variable
    let serialNumberMatch;
    // find all occurences of serialNumberRegex
    while ((serialNumberMatch = serialNumberRegex.exec(fileContent))) {
@@ -115,12 +118,19 @@
   *                               model, software version, software image]
   */
  function fetchModelAndSoftware(fileContent) {
+   // matches: WS-C2960C-8PC-L    15.0(2)SE5            C2960c405-UNIVERSALK9-M
    const modelSoftwareRegex = /([\w-]+)\s+(\d{2}\.[\w\.)?(?]+)\s+(\w+[-|_][\w-]+\-[\w]+)/g;
+   // array to hold all occurences of modelSoftwareRegex,
+   // itself split into an array accordingly
    const allModelSoftwareArray = [];
+   // define match variable
    let modelSoftwareMatch;
-
+   // find all occurences of modelSoftwareRegex
    while ((modelSoftwareMatch = modelSoftwareRegex.exec(fileContent))) {
+     // array to hold results
      const eachModelSoftwareArray = [];
+     // modelSoftwareMatch is an array, with the first item is the match,
+     // and the next three items are the groups within the match
      eachModelSoftwareArray.push(modelSoftwareMatch[1]); // model
      eachModelSoftwareArray.push(modelSoftwareMatch[2]); // software version
      eachModelSoftwareArray.push(modelSoftwareMatch[3]); // software image
@@ -129,64 +139,107 @@
    return allModelSoftwareArray;
  }
 
+ /**
+  * [Parses a device show file for attributes]
+  * @param  {string} fin [filename]
+  * @param  {string} dir [directory path]
+  * @return {[string,]}  [an array of one or more strings representing
+  *                       a row of comma separated device values]
+  */
  function parseFile(fin, dir) {
+   // get the absolute file path
    const fileName = path.join(dir, fin);
+   // read the contents of the file into a string
    const fileContent = fs.readFileSync(fileName, 'utf8');
-
+   // fetch device attributes
    const hostname = fetchHostname(fileContent);
    const serialNumbers = fetchSerialNumbers(fileContent);
    const modelAndSoftware = fetchModelAndSoftware(fileContent);
-
+   // array to hold devices
    const deviceList = [];
-
-
-   let i = 0;
-   while (i < serialNumbers.length) {
-     const device = new Immutable.List([
-       hostname,
-       serialNumbers[i],
-       modelAndSoftware[i][0],
-       modelAndSoftware[i][1],
-       modelAndSoftware[i][2],
-     ]);
-
-     deviceList.push(device.join());
-     i++;
+   // fetchModelAndSoftware can return repeated results, whereas we know
+   // fetch SerialNumbers returns the right number of results,
+   // so we loop through the results of the fetch* functions and add
+   // them to the deviceList array
+   for (let i = 0; i < serialNumbers.length; i++) {
+     // we only want to record the hostname for each stack once
+     if (i === 0) {
+       // create an immutable list with the relevant data
+       const device = new Immutable.List([
+         hostname,
+         serialNumbers[i],
+         modelAndSoftware[i][0], // model
+         modelAndSoftware[i][1], // software version
+         modelAndSoftware[i][2], // software image
+       ]);
+       // join the list into a comma separated string
+       deviceList.push(device.join());
+     } else {
+       const device = new Immutable.List([
+         // the hostname will be the same as the first hostname
+         // so it can be blank as it will be referenced in the
+         // preceding row of the csv file
+         '',
+         serialNumbers[i],
+         modelAndSoftware[i][0],
+         modelAndSoftware[i][1],
+         modelAndSoftware[i][2],
+       ]);
+       deviceList.push(device.join());
+     }
    }
-
    return deviceList;
  }
 
- // Loop through test Data directory
+ /**
+  * [build data from show files directory into the content for a csv file]
+  * @param  {string} dir [path to show files directory]
+  * @return {string}     [content for csv file as a single string]
+  */
  function buildData(dir) {
-   const start = new Date().getTime();
-   const files = [];
+   // we need to convert dir from an object to a string
    const dirString = String(dir);
+   // define the csv headings as the first line of our csv content
    let output = 'Hostname,Serial Number,Model,Software Version,Software Image\n';
+   // map over the array of file names returned by readdirSync
    fs.readdirSync(dirString).map((file) => {
-     files.push(file);
+     // update the global count of the number of files processed
+     processed.files += 1;
+     // parse each file, mapping over the returned array,
+     // adding each device string to the output string
      parseFile(file, dirString).map((device) => {
+       // update the global count of the number of devices processed
        processed.devices += 1;
        output += device;
        output += '\n';
      });
    });
-   processed.files = files.length;
-   const end = new Date().getTime();
-   const timeTaken = end - start;
-   mainWindow.webContents.send('stats', processed.files, processed.devices, timeTaken);
    return output;
  }
 
+ /**
+  * [write the content to a csv file]
+  * @param  {string} content   [csv ready device data]
+  * @param  {string} outputDir [directory csv file to be created in]
+  * @param  {string} filename  [csv filename]
+  * no @return
+  */
  function writeDataToCSV(content, outputDir, filename) {
+   // if no outputDir specified use the current directory
    const outputPath = outputDir || __dirname;
+   // create the full file path
    const fullPathFilename = path.resolve(outputPath, `${filename}.csv`);
+   // write to file
    fs.writeFileSync(fullPathFilename, content);
  }
 
+ // on 'build' trigger, receive input & output directories, & filename
+ // build data and write to csv, then send back stats
  ipcMain.on('build', (event, showFilesDir, outputDir, inventoryFilename) => {
+   const start = new Date().getTime();
    const result = buildData(showFilesDir);
    const fullFilePath = path.resolve(outputDir, inventoryFilename);
    writeDataToCSV(result, outputDir, inventoryFilename);
-   event.sender.send('result', result, fullFilePath, processed.files, processed.devices);
+   const end = new Date().getTime();
+   event.sender.send('stats', fullFilePath, processed.files, processed.devices, (end - start));
  });
