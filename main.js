@@ -201,14 +201,15 @@
    const dirString = String(dir);
    // define the csv headings as the first line of our csv content
    let output = 'Hostname,Serial Number,Model,Software Version,Software Image\n';
+   // get array of filenames in directory
    const files = fs.readdirSync(dirString);
-   // map over the array of file names returned by readdirSync
+   // map over the files
    _.forEach(files, (file) => {
      // update the global count of the number of files processed
      processed.files += 1;
+     // get array of devices from parsed file
      const devices = parseFile(file, dirString);
-     // parse each file, mapping over the returned array,
-     // adding each device string to the output string
+     // mapping over the devices, adding each to output string
      _.forEach(devices, (device) => {
        // update the global count of the number of devices processed
        processed.devices += 1;
