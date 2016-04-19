@@ -14,6 +14,7 @@
  const fs = require('fs');
  const path = require('path');
  const Immutable = require('immutable');
+ const _ = require('lodash');
 
  /**
   * Electron setup
@@ -161,8 +162,7 @@
    // fetch SerialNumbers returns the right number of results,
    // so we loop through the results of the fetch* functions and add
    // them to the deviceList array
-   for (let i = 0; i < serialNumbers.length; i++) {
-     // we only want to record the hostname for each stack once
+   _.forEach(_.range(serialNumbers.length), i => {
      if (i === 0) {
        // create an immutable list with the relevant data
        const device = new Immutable.List([
@@ -187,7 +187,7 @@
        ]);
        deviceList.push(device.join());
      }
-   }
+   });
    return deviceList;
  }
 
@@ -201,13 +201,15 @@
    const dirString = String(dir);
    // define the csv headings as the first line of our csv content
    let output = 'Hostname,Serial Number,Model,Software Version,Software Image\n';
+   const files = fs.readdirSync(dirString);
    // map over the array of file names returned by readdirSync
-   fs.readdirSync(dirString).map((file) => {
+   _.forEach(files, (file) => {
      // update the global count of the number of files processed
      processed.files += 1;
+     const devices = parseFile(file, dirString);
      // parse each file, mapping over the returned array,
      // adding each device string to the output string
-     parseFile(file, dirString).map((device) => {
+     _.forEach(devices, (device) => {
        // update the global count of the number of devices processed
        processed.devices += 1;
        output += device;
@@ -236,10 +238,10 @@
  // on 'build' trigger, receive input & output directories, & filename
  // build data and write to csv, then send back stats
  ipcMain.on('build', (event, showFilesDir, outputDir, inventoryFilename) => {
-   const start = new Date().getTime();
+   const start = _.now();
    const result = buildData(showFilesDir);
    const fullFilePath = path.resolve(outputDir, inventoryFilename);
    writeDataToCSV(result, outputDir, inventoryFilename);
-   const end = new Date().getTime();
+   const end = _.now();
    event.sender.send('stats', fullFilePath, processed.files, processed.devices, (end - start));
  });

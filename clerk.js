@@ -51,40 +51,53 @@ function parseFile(fileName) {
 
   var deviceList = [];
 
-  var i = 0;
-  while (i < serialNumbers.length) {
-    var device = Immutable.List([
-      hostname,
-      serialNumbers[i],
-      modelAndSoftware[i][0],
-      modelAndSoftware[i][1],
-      modelAndSoftware[i][2]
-    ]);
+  for (let i = 0; i < serialNumbers.length; i++) {
+    // we only want to record the hostname for each stack once
+    if (i === 0) {
+      // create an immutable list with the relevant data
+      const device = new Immutable.List([
+        hostname,
+        serialNumbers[i],
+        modelAndSoftware[i][0], // model
+        modelAndSoftware[i][1], // software version
+        modelAndSoftware[i][2], // software image
+      ]);
+      // join the list into a comma separated string
+      deviceList.push(device.join());
+    } else {
+      const device = new Immutable.List([
+        // the hostname will be the same as the first hostname
+        // so it can be blank as it will be referenced in the
+        // preceding row of the csv file
+        '',
+        serialNumbers[i],
+        modelAndSoftware[i][0],
+        modelAndSoftware[i][1],
+        modelAndSoftware[i][2],
+      ]);
+      deviceList.push(device.join());
+    }
 
-    deviceList.push(device.join());
-    i++;
+    return deviceList;
   }
 
-  return deviceList;
-}
-
-// Loop through test Data directory
-function buildData(dir) {
-  var output = "Hostname,Serial Number,Model,Software Version,Software Image\n";
-  fs.readdirSync(dir).map(function(file) {
-    parseFile(file).map(function(device) {
-      output += device;
-      output += "\n"
+  // Loop through test Data directory
+  function buildData(dir) {
+    var output = "Hostname,Serial Number,Model,Software Version,Software Image\n";
+    fs.readdirSync(dir).map(function(file) {
+      parseFile(file).map(function(device) {
+        output += device;
+        output += "\n"
+      });
     });
-  });
-  return output;
-}
+    return output;
+  }
 
-function writeDataToCSV(content) {
-  var d = new Date()
-  var filename = "Inventory-" + d.getFullYear() + "-" + (d.getMonth() +1) + "-" + d.getDate() + "-" + d.getHours() + d.getMinutes() + d.getSeconds() + ".csv"
-  fs.writeFileSync(filename, content);
-}
+  function writeDataToCSV(content) {
+    var d = new Date()
+    var filename = "Inventory-" + d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + "-" + d.getHours() + d.getMinutes() + d.getSeconds() + ".csv"
+    fs.writeFileSync(filename, content);
+  }
 
-console.log(buildData(testDataDir));
-writeDataToCSV(buildData(testDataDir));
+  console.log(buildData(testDataDir));
+  // writeDataToCSV(buildData(testDataDir));

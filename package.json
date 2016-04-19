@@ -23,6 +23,7 @@
     "bootstrap": "^3.3.6",
     "firebase": "^2.4.2",
     "immutable": "^3.7.6",
-    "jquery": "^2.2.3"
+    "jquery": "^2.2.3",
+    "lodash": "^4.11.1"
   }
 }
