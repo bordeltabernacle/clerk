@@ -13,7 +13,9 @@
     "build": "babel src -d build"
   },
   "devDependencies": {
-    "electron-prebuilt": "^0.37.2"
+    "babel-eslint": "^6.0.3",
+    "electron-prebuilt": "^0.37.2",
+    "eslint": "^2.8.0"
   },
   "dependencies": {
     "bootstrap": "^3.3.6",

@@ -62,8 +62,8 @@
  /**
   * Fetches device hostname from fileContent
   * using a regular expression.
-  * @param  {string} fileContent [contents of show file]
-  * @return {string}             [device hostname]
+  * @param  {String} fileContent The show file contents
+  * @return {String}             The device hostname
   */
  function fetchHostname(fileContent) {
    // assumes the hostname is the name of the device
@@ -73,14 +73,15 @@
    const hostnameRegex = /(\S+)#sh[ow\s]+ver.*/;
    // the hostname is the second item in
    // the array returned by .exec
-   return hostnameRegex.exec(fileContent)[1];
+   const hostname = hostnameRegex.exec(fileContent)[1];
+   return hostname;
  }
 
  /**
   * Fetches all device serial numbers from fileContent
   * using a regular expression.
-  * @param  {string} fileContent [contents of show file]
-  * @return {[string,]}          [an array of one or more device serial numbers]
+  * @param  {String} fileContent The show file contents
+  * @return {Array}              Device serial numbers
   */
  function fetchSerialNumbers(fileContent) {
    // matches: System serial number            : ANC1111A1AB
@@ -99,11 +100,12 @@
  }
 
  /**
-  * [Fetches all model numbers, software versions and software images from
-  * fileContent using a regular expression]
-  * @param  {string} fileContent [contents of show file]
-  * @return {[[string,],]}       [an array of one or more arrays, containing
-  *                               model, software version, software image]
+  * Fetches all model numbers, software versions and
+  * software images from fileContent using a regular expression
+  * @param  {String} fileContent Show file contents
+  * @return {Array}              Array of one or more arrays,
+  *                              containing model, software
+  *                              version, software image
   */
  function fetchModelAndSoftware(fileContent) {
    // matches: WS-C2960C-8PC-L    15.0(2)SE5            C2960c405-UNIVERSALK9-M
@@ -130,11 +132,11 @@
  }
 
  /**
-  * [Parses a device show file for attributes]
-  * @param  {string} fin [filename]
-  * @param  {string} dir [directory path]
-  * @return {List<Map<K, V>>}  [an array of one or more maps
-  *                              of device attributes]
+  * Parses `fin` for device attributes
+  * @param  {String} fin      The filename
+  * @param  {String} dir      The directory path
+  * @return {List<Map<K, V>>} Array of one or more maps
+  *                           of device attributes
   */
  function parseFile(fin, dir) {
    // get the absolute file path
@@ -165,13 +167,13 @@
  }
 
  /**
-  * [buildDeviceMap description]
-  * @param  {string} hostname  [device hostname]
-  * @param  {string} serial    [device serial number]
-  * @param  {string} model     [device model]
-  * @param  {string} swVersion [device software version]
-  * @param  {string} swImage   [device software image]
-  * @return {Map<K,V>}         [Immutable Map of device attributes]
+  * Returns an Immutable Map of device attributes
+  * @param  {String} hostname  The hostname
+  * @param  {String} serial    The serial number
+  * @param  {String} model     The model
+  * @param  {String} swVersion The software version
+  * @param  {String} swImage   The software image
+  * @return {Map<K,V>}         Immutable Map of device attributes
   */
  function buildDeviceMap(hostname, serial, model, swVersion, swImage) {
    return new Immutable.Map({
@@ -180,10 +182,12 @@
  }
 
  /**
-  * [build data from show files directory into the content for a csv file]
-  * @param  {string} dir [path to show files directory]
-  * @return {Map<K, V>}  [map containing content for csv file as a single string,
-  *                       number of files & number of devices]
+  * Builds data from show files directory into
+  * content for csv file
+  * @param  {String} dir The path to show files directory
+  * @return {Map<K, V>}  An Immutable Map containing: content
+  *                      for csv file as a single string,
+  *                      number of files & number of devices
   */
  function buildContent(dir) {
    // we need to convert dir from an object to a string
@@ -215,11 +219,13 @@
  }
 
  /**
-  * [write the content to a csv file]
-  * @param  {string} content   [csv ready device data]
-  * @param  {string} outputDir [directory csv file to be created in]
-  * @param  {string} filename  [csv filename]
-  * no @return
+  * Writes content to csv file
+  * @param  {String} content          The csv ready content
+  * @param  {String} outputDir        The directory the csv file is
+  *                                   to be created in
+  * @param  {String} filename         The csv filename
+  * @return {String} fullPathFilename The full path and filename
+  *                                   of written csv file
   */
  function writeDataToCSV(content, outputDir, filename) {
    // if no outputDir specified use the current directory
@@ -228,16 +234,20 @@
    const fullPathFilename = path.resolve(outputPath, `${filename}.csv`);
    // write to file
    fs.writeFileSync(fullPathFilename, content);
+   return fullPathFilename;
  }
 
- // on 'build' trigger, receive input & output directories, & filename
+ // on 'build' trigger, receive input & output directories & filename;
  // build data and write to csv, then send back stats
  ipcMain.on('build', (event, showFilesDir, outputDir, inventoryFilename) => {
    const start = _.now();
    const result = buildContent(showFilesDir);
-   const fullFilePath = path.resolve(outputDir, inventoryFilename);
-   writeDataToCSV(result.get('content'), outputDir, inventoryFilename);
+   const fullFilePath = writeDataToCSV(result.get('content'), outputDir, inventoryFilename);
    const end = _.now();
-   event.sender.send('stats', fullFilePath, result.get('files'), result.get(
-     'devices'), (end - start));
+   event.sender.send(
+     'stats',
+     fullFilePath,
+     result.get('files'),
+     result.get('devices'), (end - start)
+   );
  });
