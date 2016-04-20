@@ -153,15 +153,19 @@
    // we loop through the results of the fetch* functions building up
    // a list of maps
    const devices = _.map(_.range(serialNumbers.length), (i) => {
-     if (i === 0) {
-       return buildDeviceMap(hostname, serialNumbers[i],
-         modelAndSoftware[i].get(0), modelAndSoftware[i].get(1),
-         modelAndSoftware[i].get(2));
-     } else {
-       return buildDeviceMap('', serialNumbers[i],
-         modelAndSoftware[i].get(0), modelAndSoftware[i].get(1),
-         modelAndSoftware[i].get(2));
+     let deviceMap;
+     switch (i) {
+       case 0:
+         deviceMap = buildDeviceMap(hostname, serialNumbers[i],
+           modelAndSoftware[i].get(0), modelAndSoftware[i].get(1),
+           modelAndSoftware[i].get(2));
+         break;
+       default:
+         deviceMap = buildDeviceMap('', serialNumbers[i],
+           modelAndSoftware[i].get(0), modelAndSoftware[i].get(1),
+           modelAndSoftware[i].get(2));
      }
+     return deviceMap;
    });
    return devices;
  }
