@@ -1,6 +1,6 @@
 {
   /* See all the pre-defined configs here: https://www.npmjs.com/package/eslint-config-defaults */
-  "extends": "airbnb",
+  "extends": "standard",
   "parser": "babel-eslint",
   "ecmaFeatures": {
     "jsx": true
@@ -31,6 +31,7 @@
     "no-unused-vars": 1,
     "semi-spacing": 1,
     "array-callback-return": 1,
+    "space-before-function-paren": [2, "never"],
     "object-shorthand": 1,
     "valid-jsdoc": [
       2, {
@@ -48,7 +49,7 @@
     "react/jsx-no-duplicate-props": 1,
     "react/jsx-no-literals": 0,
     "react/jsx-no-undef": 1,
-    "react/jsx-sort-prop-types": 1,
+    "react/sort-prop-types": 1,
     "react/jsx-sort-props": 0,
     "react/jsx-uses-react": 1,
     "react/jsx-uses-vars": 1,

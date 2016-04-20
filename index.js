@@ -6,12 +6,21 @@
  // *******************************************************
 
  require('bootstrap');
- const ipcRenderer = require('electron').ipcRenderer;
- const remote = require('electron').remote;
+ const electron = require('electron');
+ const ipcRenderer = electron.ipcRenderer;
+ const remote = electron.remote;
  const dialog = remote.require('dialog');
  const Firebase = require('firebase');
- const clerkFirebase = new Firebase('https://clerk.firebaseio.com/');
+ const db = new Firebase('https://clerk.firebaseio.com/');
 
+ // global object to store user & project info
+ const project = {
+   user: '',
+   name: '',
+   ref: ''
+ };
+
+ //
  document.getElementById('btEmailInput').value = localStorage.btEmail;
 
  const loginPageSubmit = document.getElementById('loginPageContinue');
@@ -36,12 +45,13 @@
      }
    } else {
      localStorage.btEmail = btEmailInput.value;
-     projectName = projectNameInput.value.replace(/ /g, '_');
-     projectRef = projectRefInput.value;
-     user = document.getElementById('btEmailInput').value;
+     project.name = projectNameInput.value.replace(/ /g, '_');
+     project.ref = projectRefInput.value;
+     project.user = document.getElementById('btEmailInput').value;
      const d = new Date();
-     const [y, m, date, h, min, s] = [d.getFullYear(), (d.getMonth() + 1), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()];
-     const defaultFilename = `${projectName}_inventory_${y}${m}${date}${h}${min}${s}`;
+     const [y, m, date, h, min, s] =
+       [d.getFullYear(), (d.getMonth() + 1), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()];
+     const defaultFilename = `${project.name}_inventory_${y}${m}${date}${h}${min}${s}`;
      document.getElementById('inventoryFilename').value = defaultFilename;
      alertMessage.style.display = 'none';
      document.getElementById('loginPage').style.display = 'none';
@@ -49,28 +59,31 @@
    }
  });
 
- document.getElementById('showFilesDirSelect').addEventListener('click', (event) => {
+ const showFilesDirSelect = document.getElementById('showFilesDirSelect');
+ showFilesDirSelect.addEventListener('click', (event) => {
    const showFilesDir = dialog.showOpenDialog({
-     properties: ['openDirectory'],
+     properties: ['openDirectory']
    });
    document.getElementById('showFilesDirPath').value = showFilesDir;
  });
 
- document.getElementById('outputDirSelect').addEventListener('click', (event) => {
+ const outputDirSelect = document.getElementById('outputDirSelect');
+ outputDirSelect.addEventListener('click', (event) => {
    const outputDir = dialog.showOpenDialog({
-     properties: ['openDirectory'],
+     properties: ['openDirectory']
    });
    document.getElementById('outputDirPath').value = outputDir;
  });
 
  const buildButton = document.getElementById('build');
-
  buildButton.addEventListener('click', (event) => {
    const showFilesDirPath = document.getElementById('showFilesDirPath').value;
    const outputDirPath = document.getElementById('outputDirPath').value;
-   const inventoryFilename = document.getElementById('inventoryFilename').value.replace(/ /g, '_');
+   const inventoryFilename = document.getElementById('inventoryFilename').value
+     .replace(/ /g, '_');
    document.getElementById('inputForm').style.display = 'none';
-   ipcRenderer.send('build', showFilesDirPath, outputDirPath, inventoryFilename);
+   ipcRenderer.send('build', showFilesDirPath, outputDirPath,
+     inventoryFilename);
  });
 
  ipcRenderer.on('stats', (event, inventoryFilename, noOfFiles, noOfDevices, timeTaken) => {
@@ -78,18 +91,19 @@
    document.getElementById('msg').innerHTML = `<b>${inventoryFilename}.csv</b>`;
    document.getElementById('stats').innerHTML =
      `<p><b>${noOfFiles}</b> files and <b>${noOfDevices}</b> devices processed in <b>${timeTaken}ms</b>.</p>`;
-   clerkFirebase.push({
+   db.push({
      date: String(new Date()),
-     user: user,
-     project: projectName,
-     reference: projectRef,
+     user: project.user,
+     project: project.name,
+     reference: project.ref,
      files: noOfFiles,
      devices: noOfDevices,
-     time: timeTaken,
+     time: timeTaken
    });
  });
 
- document.getElementById('startAgain').addEventListener('click', (event) => {
+ const startAgain = document.getElementById('startAgain');
+ startAgain.addEventListener('click', (event) => {
    document.getElementById('alertMessage').style.visibility = 'hidden';
    document.getElementById('resultMessage').style.display = 'none';
    document.getElementById('showFilesDirPath').value = '';

@@ -42,7 +42,7 @@
      height: 600,
      center: true,
      resizable: false,
-     autoHideMenuBar: true,
+     autoHideMenuBar: true
    });
 
    // and load the index.html of the app.
@@ -107,7 +107,8 @@
   */
  function fetchModelAndSoftware(fileContent) {
    // matches: WS-C2960C-8PC-L    15.0(2)SE5            C2960c405-UNIVERSALK9-M
-   const modelSoftwareRegex = /([\w-]+)\s+(\d{2}\.[\w\.)?(?]+)\s+(\w+[-|_][\w-]+\-[\w]+)/g;
+   const modelSoftwareRegex =
+     /([\w-]+)\s+(\d{2}\.[\w\.)?(?]+)\s+(\w+[-|_][\w-]+\-[\w]+)/g;
    // array to hold all occurences of modelSoftwareRegex,
    // itself split into an array accordingly
    const allModelSoftwareArray = [];
@@ -121,7 +122,7 @@
        // and the next three items are the groups within the match
        modelSoftwareMatch[1], // model
        modelSoftwareMatch[2], // software version
-       modelSoftwareMatch[3], // software image
+       modelSoftwareMatch[3] // software image
      ]);
      allModelSoftwareArray.push(eachModelSoftwareArray);
    }
@@ -146,29 +147,36 @@
    const modelAndSoftware = fetchModelAndSoftware(fileContent);
    // fetchModelAndSoftware can return repeated results after intended results,
    // whereas we know fetch SerialNumbers returns the right number of results,
-   // so mapping over a range constrained by the length of SerialNumbers
+   // so mapping over a range, constrained by the length of SerialNumbers,
    // we loop through the results of the fetch* functions building up
    // a list of maps
-   const devices = _.map(_.range(serialNumbers.length), i => {
+   const devices = _.map(_.range(serialNumbers.length), (i) => {
      if (i === 0) {
-       return new Immutable.Map({
-         hostname: hostname,
-         serial: serialNumbers[i],
-         model: modelAndSoftware[i].get(0),
-         swVersion: modelAndSoftware[i].get(1),
-         swImage: modelAndSoftware[i].get(2),
-       });
+       return buildDeviceMap(hostname, serialNumbers[i],
+         modelAndSoftware[i].get(0), modelAndSoftware[i].get(1),
+         modelAndSoftware[i].get(2));
      } else {
-       return new Immutable.Map({
-         hostname: '',
-         serial: serialNumbers[i],
-         model: modelAndSoftware[i].get(0),
-         swVersion: modelAndSoftware[i].get(1),
-         swImage: modelAndSoftware[i].get(2),
-       });
+       return buildDeviceMap('', serialNumbers[i],
+         modelAndSoftware[i].get(0), modelAndSoftware[i].get(1),
+         modelAndSoftware[i].get(2));
      }
    });
    return devices;
+ }
+
+ /**
+  * [buildDeviceMap description]
+  * @param  {string} hostname  [device hostname]
+  * @param  {string} serial    [device serial number]
+  * @param  {string} model     [device model]
+  * @param  {string} swVersion [device software version]
+  * @param  {string} swImage   [device software image]
+  * @return {Map<K,V>}         [Immutable Map of device attributes]
+  */
+ function buildDeviceMap(hostname, serial, model, swVersion, swImage) {
+   return new Immutable.Map({
+     hostname, serial, model, swVersion, swImage
+   });
  }
 
  /**
@@ -181,7 +189,8 @@
    // we need to convert dir from an object to a string
    const dirString = String(dir);
    // define the csv headings as the first line of our csv content
-   let output = 'Hostname,Serial Number,Model,Software Version,Software Image\n';
+   let output =
+     'Hostname,Serial Number,Model,Software Version,Software Image\n';
    // get array of filenames in directory
    const files = fs.readdirSync(dirString);
    let noOfDevices = 0;
@@ -200,7 +209,7 @@
    const result = new Immutable.Map({
      content: output,
      files: files.length,
-     devices: noOfDevices,
+     devices: noOfDevices
    });
    return result;
  }
@@ -229,5 +238,6 @@
    const fullFilePath = path.resolve(outputDir, inventoryFilename);
    writeDataToCSV(result.get('content'), outputDir, inventoryFilename);
    const end = _.now();
-   event.sender.send('stats', fullFilePath, result.get('files'), result.get('devices'), (end - start));
+   event.sender.send('stats', fullFilePath, result.get('files'), result.get(
+     'devices'), (end - start));
  });
