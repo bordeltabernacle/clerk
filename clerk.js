@@ -1,103 +1,193 @@
-'use strict';
+ // *******************************************************
+ // * Copyright (C) BT - All Rights Reservedrob.phoenix@bt.com
+ // * Unauthorized copying of this file, via any medium is strictly prohibited
+ // * Proprietary and confidential
+ // * Written by Rob Phoenix <rob.phoenix@bt.com>, 2016
+ // *******************************************************
 
-var fs = require('fs');
-var path = require('path');
-var R = require('ramda');
-var Immutable = require('immutable');
+ const fs = require('fs');
+ const path = require('path');
+ const Immutable = require('immutable');
+ const map = require('lodash.map');
+ const range = require('lodash.range');
+ const forEach = require('lodash.forEach');
 
-var testDataDir = 'C:\\Users\\robertph\\RobBT\\RepeatableDesign\\python_scripts\\inventory_generation\\alexey-show-files' // path.join('..', 'test_data');
-var hostnameRegex = /(\S+)\#sh[ow\s]+ver.*/;
-var serialNumberRegex = /[Ss]ystem\s+[Ss]erial\s+[Nn]umber\s+:\s([\w]+)/g;
-var modelSoftwareRegex = /([\w-]+)\s+(\d{2}\.[\w\.)?(?]+)\s+(\w+[-|_][\w-]+\-[\w]+)/g;
+ /**
+  * Fetches device hostname from fileContent
+  * using a regular expression.
+  * @param  {String} fileContent The show file contents
+  * @return {String}             The device hostname
+  */
+ function fetchHostname(fileContent) {
+   // assumes the hostname is the name of the device
+   // before the #show version command, ie.
+   // {{hostname}}# sh ver
+   // we only need one occurrence of it
+   const hostnameRegex = /(\S+)#sh[ow\s]+ver.*/;
+   // the hostname is the second item in
+   // the array returned by .exec
+   const hostname = hostnameRegex.exec(fileContent)[1];
+   return hostname;
+ }
 
+ /**
+  * Fetches all device serial numbers from fileContent
+  * using a regular expression.
+  * @param  {String} fileContent The show file contents
+  * @return {Array}              Device serial numbers
+  */
+ function fetchSerialNumbers(fileContent) {
+   // matches: System serial number            : ANC1111A1AB
+   const serialNumberRegex = /[Ss]ystem\s+[Ss]erial\s+[Nn]umber\s+:\s([\w]+)/g;
+   // array to hold all found serial numbers
+   const serialNumberArray = [];
+   // define match variable
+   let serialNumberMatch;
+   // find all occurences of serialNumberRegex
+   while ((serialNumberMatch = serialNumberRegex.exec(fileContent))) {
+     // the serial number is the second item
+     // in the array returned by .exec
+     serialNumberArray.push(serialNumberMatch[1]);
+   }
+   return serialNumberArray;
+ }
 
-function fetchHostname(fileContent) {
-  return hostnameRegex.exec(fileContent)[1];
-};
+ /**
+  * Fetches all model numbers, software versions and
+  * software images from fileContent using a regular expression
+  * @param  {String} fileContent Show file contents
+  * @return {Array}              Array of one or more arrays,
+  *                              containing model, software
+  *                              version, software image
+  */
+ function fetchModelAndSoftware(fileContent) {
+   // matches: WS-C2960C-8PC-L    15.0(2)SE5            C2960c405-UNIVERSALK9-M
+   const modelSoftwareRegex =
+     /([\w-]+)\s+(\d{2}\.[\w\.)?(?]+)\s+(\w+[-|_][\w-]+\-[\w]+)/g;
+   // array to hold all occurences of modelSoftwareRegex,
+   // itself split into an array accordingly
+   const allModelSoftwareArray = [];
+   // define match variable
+   let modelSoftwareMatch;
+   // find all occurences of modelSoftwareRegex
+   while ((modelSoftwareMatch = modelSoftwareRegex.exec(fileContent))) {
+     // array to hold results
+     const eachModelSoftwareArray = Immutable.List([
+       // modelSoftwareMatch is an array, with the first item is the match,
+       // and the next three items are the groups within the match
+       modelSoftwareMatch[1], // model
+       modelSoftwareMatch[2], // software version
+       modelSoftwareMatch[3] // software image
+     ]);
+     allModelSoftwareArray.push(eachModelSoftwareArray);
+   }
+   return allModelSoftwareArray;
+ }
 
-function fetchSerialNumbers(fileContent) {
-  var serialNumberArray = [];
-  var serialNumberMatch;
+ /**
+  * Parses `fin` for device attributes
+  * @param  {String} fin      The filename
+  * @param  {String} dir      The directory path
+  * @return {List<Map<K, V>>} Array of one or more maps
+  *                           of device attributes
+  */
+ function parseFile(fin, dir) {
+   // get the absolute file path
+   const fileName = path.join(dir, fin);
+   // read the contents of the file into a string
+   const fileContent = fs.readFileSync(fileName, 'utf8');
+   // fetch device attributes
+   const hostname = fetchHostname(fileContent);
+   const serialNumbers = fetchSerialNumbers(fileContent);
+   const modelAndSoftware = fetchModelAndSoftware(fileContent);
+   // fetchModelAndSoftware can return repeated results after intended results,
+   // whereas we know fetch SerialNumbers returns the right number of results,
+   // so mapping over a range, constrained by the length of SerialNumbers,
+   // we loop through the results of the fetch* functions building up
+   // a list of maps
+   const devices = map(range(serialNumbers.length), (i) => {
+     if (i === 0) {
+       return buildDeviceMap(hostname, serialNumbers[i],
+         modelAndSoftware[i].get(0), modelAndSoftware[i].get(1),
+         modelAndSoftware[i].get(2));
+     }
+     return buildDeviceMap('', serialNumbers[i],
+       modelAndSoftware[i].get(0), modelAndSoftware[i].get(1),
+       modelAndSoftware[i].get(2));
+   });
+   return devices;
+ }
 
-  while (serialNumberMatch = serialNumberRegex.exec(fileContent)) {
-    serialNumberArray.push(serialNumberMatch[1]);
-  };
+ /**
+  * Returns an Immutable Map of device attributes
+  * @param  {String} hostname  The hostname
+  * @param  {String} serial    The serial number
+  * @param  {String} model     The model
+  * @param  {String} swVersion The software version
+  * @param  {String} swImage   The software image
+  * @return {Map<K,V>}         Immutable Map of device attributes
+  */
+ function buildDeviceMap(hostname, serial, model, swVersion, swImage) {
+   return new Immutable.Map({
+     hostname, serial, model, swVersion, swImage
+   });
+ }
 
-  return serialNumberArray;
-};
+ /**
+  * Builds data from show files directory into
+  * content for csv file
+  * @param  {String} dir The path to show files directory
+  * @return {Map<K, V>}  An Immutable Map containing: content
+  *                      for csv file as a single string,
+  *                      number of files & number of devices
+  */
+ function buildContent(dir) {
+   // we need to convert dir from an object to a string
+   const dirString = String(dir);
+   // define the csv headings as the first line of our csv content
+   let output =
+     'Hostname,Serial Number,Model,Software Version,Software Image\n';
+   // get array of filenames in directory
+   const files = fs.readdirSync(dirString);
+   let noOfDevices = 0;
+   // map over the files
+   forEach(files, (file) => {
+     // update the global count of the number of files processed
+     // get array of devices from parsed file
+     const devices = parseFile(file, dirString);
+     noOfDevices += devices.length;
+     // mapping over the devices, adding each to output string
+     forEach(devices, (device) => {
+       // update the global count of the number of devices processed
+       output += `${device.join()}\n`;
+     });
+   });
+   const result = new Immutable.Map({
+     content: output,
+     files: files.length,
+     devices: noOfDevices
+   });
+   return result;
+ }
 
-function fetchModelAndSoftware(fileContent) {
-  var allModelSoftwareArray = [];
-  var modelSoftwareMatch;
+ /**
+  * Writes content to csv file
+  * @param  {String} content          The csv ready content
+  * @param  {String} outputDir        The directory the csv file is
+  *                                   to be created in
+  * @param  {String} filename         The csv filename
+  * @return {String} fullPathFilename The full path and filename
+  *                                   of written csv file
+  */
+ function writeDataToCSV(content, outputDir, filename) {
+   // if no outputDir specified use the current directory
+   const outputPath = outputDir || __dirname;
+   // create the full file path
+   const fullPathFilename = path.resolve(outputPath, `${filename}.csv`);
+   // write to file
+   fs.writeFileSync(fullPathFilename, content);
+   return fullPathFilename;
+ }
 
-  while (modelSoftwareMatch = modelSoftwareRegex.exec(fileContent)) {
-    var eachModelSoftwareArray = [];
-    eachModelSoftwareArray.push(modelSoftwareMatch[1]);
-    eachModelSoftwareArray.push(modelSoftwareMatch[2]);
-    eachModelSoftwareArray.push(modelSoftwareMatch[3]);
-    allModelSoftwareArray.push(eachModelSoftwareArray);
-  };
-
-  return allModelSoftwareArray;
-}
-
-function parseFile(fileName) {
-  fileName = path.join(testDataDir, fileName);
-  var fileContent = fs.readFileSync(fileName, 'utf8');
-
-  var hostname = fetchHostname(fileContent);
-  var serialNumbers = fetchSerialNumbers(fileContent);
-  var modelAndSoftware = fetchModelAndSoftware(fileContent);
-
-  var deviceList = [];
-
-  for (let i = 0; i < serialNumbers.length; i++) {
-    // we only want to record the hostname for each stack once
-    if (i === 0) {
-      // create an immutable list with the relevant data
-      const device = new Immutable.List([
-        hostname,
-        serialNumbers[i],
-        modelAndSoftware[i][0], // model
-        modelAndSoftware[i][1], // software version
-        modelAndSoftware[i][2], // software image
-      ]);
-      // join the list into a comma separated string
-      deviceList.push(device.join());
-    } else {
-      const device = new Immutable.List([
-        // the hostname will be the same as the first hostname
-        // so it can be blank as it will be referenced in the
-        // preceding row of the csv file
-        '',
-        serialNumbers[i],
-        modelAndSoftware[i][0],
-        modelAndSoftware[i][1],
-        modelAndSoftware[i][2],
-      ]);
-      deviceList.push(device.join());
-    }
-
-    return deviceList;
-  }
-
-  // Loop through test Data directory
-  function buildData(dir) {
-    var output = "Hostname,Serial Number,Model,Software Version,Software Image\n";
-    fs.readdirSync(dir).map(function(file) {
-      parseFile(file).map(function(device) {
-        output += device;
-        output += "\n"
-      });
-    });
-    return output;
-  }
-
-  function writeDataToCSV(content) {
-    var d = new Date()
-    var filename = "Inventory-" + d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + "-" + d.getHours() + d.getMinutes() + d.getSeconds() + ".csv"
-    fs.writeFileSync(filename, content);
-  }
-
-  console.log(buildData(testDataDir));
-  // writeDataToCSV(buildData(testDataDir));
+ module.exports.buildContent = buildContent;
+ module.exports.writeDataToCSV = writeDataToCSV;
