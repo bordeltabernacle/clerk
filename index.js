@@ -24,18 +24,17 @@
  document.getElementById('btEmailInput').value = localStorage.btEmail;
 
  const projectInputSubmit = document.getElementById('projectInputContinue');
+ const btEmailInput = document.getElementById('btEmailInput');
+ const projectNameInput = document.getElementById('projectNameInput');
+ const projectRefInput = document.getElementById('projectRefInput');
+ const alertMessage = document.getElementById('alertMessage');
 
- projectInputSubmit.addEventListener('click', (event) => {
-   const btEmailInput = document.getElementById('btEmailInput');
-   const projectNameInput = document.getElementById('projectNameInput');
-   const projectRefInput = document.getElementById('projectRefInput');
-   const alertMessage = document.getElementById('alertMessage');
-   alertMessage.style.display = 'none';
-   alertMessage.innerHTML = '';
+ function validateProjectInput() {
    if (btEmailInput.value === '' || projectNameInput.value === '' || projectRefInput.value === '') {
      if (btEmailInput.value === '') {
        alertMessage.style.display = 'block';
        alertMessage.innerHTML += '<li>Please Enter your BT Email Address</li>';
+       return false;
      }
      if (projectNameInput.value === '') {
        alertMessage.style.display = 'block';
@@ -48,14 +47,23 @@
      if (!/^[\w\-\_]+$/.test(projectNameInput.value)) {
        alertMessage.style.display = 'block';
        alertMessage.innerHTML +=
-         '<li>The Project Name can only contain uppercase and lowercase letters, numbers, and the <b>-</b> & <b>_</b> characters</li>';
+         '<li>Project Name can contain uppercase and lowercase letters, numbers, and the <b>-</b> and <b>_</b> characters</li>';
      }
-   } else if (!/^[\w\-\_]+$/.test(projectNameInput.value)) {
+     return false;
+   }
+   if (!/^[\w\-\_]+$/.test(projectNameInput.value)) {
      console.log(projectNameInput.value);
      alertMessage.style.display = 'block';
      alertMessage.innerHTML +=
        '<li>The Project Name can only contain uppercase and lowercase letters, numbers, and the <b>-</b> & <b>_</b> characters</li>';
-   } else {
+     return false;
+   }
+   return true;
+ }
+
+ projectInputSubmit.addEventListener('click', (event) => {
+   alertMessage.innerHTML = '';
+   if (validateProjectInput()) {
      localStorage.btEmail = btEmailInput.value;
      project.name = projectNameInput.value.replace(/ /g, '_');
      project.ref = projectRefInput.value;
