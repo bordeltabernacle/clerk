@@ -23,9 +23,9 @@
  //
  document.getElementById('btEmailInput').value = localStorage.btEmail;
 
- const loginPageSubmit = document.getElementById('loginPageContinue');
+ const projectInputSubmit = document.getElementById('projectInputContinue');
 
- loginPageSubmit.addEventListener('click', (event) => {
+ projectInputSubmit.addEventListener('click', (event) => {
    const btEmailInput = document.getElementById('btEmailInput');
    const projectNameInput = document.getElementById('projectNameInput');
    const projectRefInput = document.getElementById('projectRefInput');
@@ -66,7 +66,7 @@
      const defaultFilename = `${project.name}_inventory_${y}${m}${date}${h}${min}${s}`;
      document.getElementById('inventoryFilename').value = defaultFilename;
      alertMessage.style.display = 'none';
-     document.getElementById('loginPage').style.display = 'none';
+     document.getElementById('projectInput').style.display = 'none';
      document.getElementById('inputForm').style.display = 'block';
    }
  });
@@ -121,5 +121,5 @@
    document.getElementById('resultMessage').style.display = 'none';
    document.getElementById('showFilesDirPath').value = '';
    document.getElementById('outputDirPath').value = '';
-   document.getElementById('loginPage').style.display = 'block';
+   document.getElementById('projectInput').style.display = 'block';
  });
