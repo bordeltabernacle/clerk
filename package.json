@@ -9,7 +9,7 @@
   "main": "main.js",
   "author": "Rob Phoenix <rob.phoenix@bt.com>",
   "scripts": {
-    "start": "electron . --enable-logging",
+    "start": "electron . --enable-logging"
   },
   "devDependencies": {
     "babel-eslint": "^6.0.3",
