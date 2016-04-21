@@ -131,3 +131,9 @@
    document.getElementById('outputDirPath').value = '';
    document.getElementById('projectInput').style.display = 'block';
  });
+
+ ipcRenderer.on('showFilesENOENT', (event, path) => {
+   const showFilesError = document.getElementById('showFilesError');
+   showFilesError.style.display = 'block';
+   showFilesError.innerHTML = `<p><b>${path}</b> is not a valid directory.</p>`
+ });

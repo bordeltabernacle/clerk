@@ -68,12 +68,6 @@ body {
 
 #alertMessage {
   display: none;
-  /*clear: left;*/
-}
-
-#basic-addon2 {
-  border-color: #55379b;
-  color: #55379b;
 }
 
 #btEmailInput {
@@ -107,6 +101,10 @@ body {
 .form-button:hover {
   background-color: #55379b;
   color: white;
+}
+
+#showFilesError {
+  display: none;
 }
 
 #build {

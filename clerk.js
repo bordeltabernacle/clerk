@@ -148,26 +148,32 @@
    let output =
      'Hostname,Serial Number,Model,Software Version,Software Image\n';
    // get array of filenames in directory
-   const files = fs.readdirSync(dirString);
-   let noOfDevices = 0;
-   // map over the files
-   forEach(files, (file) => {
-     // update the global count of the number of files processed
-     // get array of devices from parsed file
-     const devices = parseFile(file, dirString);
-     noOfDevices += devices.length;
-     // mapping over the devices, adding each to output string
-     forEach(devices, (device) => {
-       // update the global count of the number of devices processed
-       output += `${device.join()}\n`;
+   fs.readdirSync(dirString, (err, files) => {
+     if (err) {
+       return false;
+     }
+     let noOfDevices = 0;
+     // map over the files
+     forEach(files, (file) => {
+       // update the global count of the number of files processed
+       // get array of devices from parsed file
+       const devices = parseFile(file, dirString);
+       noOfDevices += devices.length;
+       // mapping over the devices, adding each to output string
+       forEach(devices, (device) => {
+         // update the global count of the number of devices processed
+         output += `${device.join()}\n`;
+       });
      });
+     const result = new Immutable.Map({
+       content: output,
+       files: files.length,
+       devices: noOfDevices
+     });
+     return result;
    });
-   const result = new Immutable.Map({
-     content: output,
-     files: files.length,
-     devices: noOfDevices
-   });
-   return result;
+
+
  }
 
  /**
