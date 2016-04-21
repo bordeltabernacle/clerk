@@ -24,11 +24,13 @@
  document.getElementById('btEmailInput').value = localStorage.btEmail;
 
  const loginPageSubmit = document.getElementById('loginPageContinue');
+
  loginPageSubmit.addEventListener('click', (event) => {
    const btEmailInput = document.getElementById('btEmailInput');
    const projectNameInput = document.getElementById('projectNameInput');
    const projectRefInput = document.getElementById('projectRefInput');
    const alertMessage = document.getElementById('alertMessage');
+   alertMessage.style.display = 'none';
    alertMessage.innerHTML = '';
    if (btEmailInput.value === '' || projectNameInput.value === '' || projectRefInput.value === '') {
      if (btEmailInput.value === '') {
@@ -43,6 +45,16 @@
        alertMessage.style.display = 'block';
        alertMessage.innerHTML += '<li>Please Enter a Project Reference</li>';
      }
+     if (!/^[\w\-\_]+$/.test(projectNameInput.value)) {
+       alertMessage.style.display = 'block';
+       alertMessage.innerHTML +=
+         '<li>The Project Name can only contain uppercase and lowercase letters, numbers, and the <b>-</b> & <b>_</b> characters</li>';
+     }
+   } else if (!/^[\w\-\_]+$/.test(projectNameInput.value)) {
+     console.log(projectNameInput.value);
+     alertMessage.style.display = 'block';
+     alertMessage.innerHTML +=
+       '<li>The Project Name can only contain uppercase and lowercase letters, numbers, and the <b>-</b> & <b>_</b> characters</li>';
    } else {
      localStorage.btEmail = btEmailInput.value;
      project.name = projectNameInput.value.replace(/ /g, '_');
@@ -60,12 +72,13 @@
  });
 
  const showFilesDirSelect = document.getElementById('showFilesDirSelect');
- showFilesDirSelect.addEventListener('click', (event) => {
-   const showFilesDir = dialog.showOpenDialog({
-     properties: ['openDirectory']
+ showFilesDirSelect.addEventListener(
+   'click', (event) => {
+     const showFilesDir = dialog.showOpenDialog({
+       properties: ['openDirectory']
+     });
+     document.getElementById('showFilesDirPath').value = showFilesDir;
    });
-   document.getElementById('showFilesDirPath').value = showFilesDir;
- });
 
  const outputDirSelect = document.getElementById('outputDirSelect');
  outputDirSelect.addEventListener('click', (event) => {

@@ -10,7 +10,6 @@
   "author": "Rob Phoenix <rob.phoenix@bt.com>",
   "scripts": {
     "start": "electron . --enable-logging",
-    "build": "babel src -d build"
   },
   "devDependencies": {
     "babel-eslint": "^6.0.3",
