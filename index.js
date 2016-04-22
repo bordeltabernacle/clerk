@@ -52,7 +52,6 @@
      return false;
    }
    if (!/^[\w\-\_]+$/.test(projectNameInput.value)) {
-     console.log(projectNameInput.value);
      alertMessage.style.display = 'block';
      alertMessage.innerHTML +=
        '<li>The Project Name can only contain uppercase and lowercase letters, numbers, and the <b>-</b> & <b>_</b> characters</li>';
@@ -102,14 +101,14 @@
    const outputDirPath = document.getElementById('outputDirPath').value;
    const inventoryFilename = document.getElementById('inventoryFilename').value
      .replace(/ /g, '_');
-   document.getElementById('inputForm').style.display = 'none';
    ipcRenderer.send('build', showFilesDirPath, outputDirPath,
      inventoryFilename);
  });
 
  ipcRenderer.on('stats', (event, inventoryFilename, noOfFiles, noOfDevices, timeTaken) => {
+   document.getElementById('inputForm').style.display = 'none';
    document.getElementById('resultMessage').style.display = 'block';
-   document.getElementById('msg').innerHTML = `<b>${inventoryFilename}.csv</b>`;
+   document.getElementById('msg').innerHTML = `<b>${inventoryFilename}</b>`;
    document.getElementById('stats').innerHTML =
      `<p><b>${noOfFiles}</b> files and <b>${noOfDevices}</b> devices processed in <b>${timeTaken}ms</b>.</p>`;
    db.push({
