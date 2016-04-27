@@ -24,6 +24,7 @@
  document.getElementById('btEmailInput')
    .value = localStorage.btEmail;
 
+ const projectNameRegex = /^[\w\-\_\s]+$/;
  const btEmailInput = document.getElementById('btEmailInput');
  const projectNameInput = document.getElementById('projectNameInput');
  const projectRefInput = document.getElementById('projectRefInput');
@@ -44,14 +45,14 @@
        const message = '<li>Please Enter a Project Reference</li>';
        displayAlertMessage(message);
      }
-     if (!/^[\w\-\_]+$/.test(name)) {
+     if (!projectNameRegex.test(name)) {
        const message =
          '<li>Project Name can only contain uppercase and lowercase letters, numbers, and the <b>-</b> and <b>_</b> characters</li>';
        displayAlertMessage(message);
      }
      return false;
    }
-   if (!/^[\w\-\_]+$/.test(name)) {
+   if (!projectNameRegex.test(name)) {
      const message =
        '<li>The Project Name can only contain uppercase and lowercase letters, numbers, and the <b>-</b> & <b>_</b> characters</li>';
      displayAlertMessage(message);
@@ -70,7 +71,7 @@
      alertMessage.innerHTML = '';
      if (validateProjectInput(btEmailInput.value, projectNameInput.value, projectRefInput.value)) {
        localStorage.btEmail = btEmailInput.value;
-       project.name = projectNameInput.value.replace(/ /g, '_');
+       project.name = projectNameInput.value.replace(/\s+/g, '_');
        project.ref = projectRefInput.value;
        project.user = document.getElementById('btEmailInput').value;
        const d = new Date();
@@ -116,16 +117,14 @@
    document.getElementById('msg').innerHTML = `<b>${inventoryFilename}</b>`;
    document.getElementById('stats').innerHTML =
      `<p><b>${noOfFiles}</b> files and <b>${noOfDevices}</b> devices processed in <b>${timeTaken}ms</b>.</p>`;
-   db.push({
-     date: String(new Date()),
-     user: project.user,
-     project: project.name,
-     reference: project.ref,
-     files: noOfFiles,
-     devices: noOfDevices,
-     time: timeTaken
-   });
+   pushToDb(String(new Date()), project.user, project.name, project.ref, noOfFiles, noOfDevices, timeTaken);
  });
+
+ function pushToDb(date, user, project, ref, files, devices, time) {
+   db.push({
+     date, user, project, ref, files, devices, time
+   });
+ }
 
  document.getElementById('startAgain')
    .addEventListener('click', (event) => {
