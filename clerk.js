@@ -21,9 +21,9 @@
  function fetchHostname(fileContent) {
    // assumes the hostname is the name of the device
    // before the #show version command, ie.
-   // {{hostname}}# sh ver
+   // {{hostname}}#sh ver
    // we only need one occurrence of it
-   const hostnameRegex = /(\S+)#sh[ow\s]+ver.*/;
+   const hostnameRegex = /(\S+)#sho?w?\s+ver.*/i;
    // the hostname is the second item in
    // the array returned by .exec
    const hostname = hostnameRegex.exec(fileContent)[1];
@@ -38,7 +38,7 @@
   */
  function fetchSerialNumbers(fileContent) {
    // matches: System serial number            : ANC1111A1AB
-   const serialNumberRegex = /[Ss]ystem\s+[Ss]erial\s+[Nn]umber\s+:\s([\w]+)/g;
+   const serialNumberRegex = /system\s+serial\s+number\s+:\s([\w]+)/gi;
    // array to hold all found serial numbers
    const serialNumberArray = [];
    // define match variable
