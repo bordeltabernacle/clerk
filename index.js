@@ -21,89 +21,94 @@
  };
 
  //
- document.getElementById('btEmailInput').value = localStorage.btEmail;
+ document.getElementById('btEmailInput')
+   .value = localStorage.btEmail;
 
- const projectInputSubmit = document.getElementById('projectInputContinue');
  const btEmailInput = document.getElementById('btEmailInput');
  const projectNameInput = document.getElementById('projectNameInput');
  const projectRefInput = document.getElementById('projectRefInput');
  const alertMessage = document.getElementById('alertMessage');
 
- function validateProjectInput() {
-   if (btEmailInput.value === '' || projectNameInput.value === '' || projectRefInput.value === '') {
-     if (btEmailInput.value === '') {
-       alertMessage.style.display = 'block';
-       alertMessage.innerHTML += '<li>Please Enter your BT Email Address</li>';
+ function validateProjectInput(email, name, ref) {
+   if (email === '' || name === '' || ref === '') {
+     if (email === '') {
+       const message = '<li>Please Enter your BT Email Address</li>';
+       displayAlertMessage(message);
        return false;
      }
-     if (projectNameInput.value === '') {
-       alertMessage.style.display = 'block';
-       alertMessage.innerHTML += '<li>Please Enter the Project Name</li>';
+     if (name === '') {
+       const message = '<li>Please Enter the Project Name</li>';
+       displayAlertMessage(message);
      }
-     if (projectRefInput.value === '') {
-       alertMessage.style.display = 'block';
-       alertMessage.innerHTML += '<li>Please Enter a Project Reference</li>';
+     if (ref === '') {
+       const message = '<li>Please Enter a Project Reference</li>';
+       displayAlertMessage(message);
      }
-     if (!/^[\w\-\_]+$/.test(projectNameInput.value)) {
-       alertMessage.style.display = 'block';
-       alertMessage.innerHTML +=
-         '<li>Project Name can contain uppercase and lowercase letters, numbers, and the <b>-</b> and <b>_</b> characters</li>';
+     if (!/^[\w\-\_]+$/.test(name)) {
+       const message =
+         '<li>Project Name can only contain uppercase and lowercase letters, numbers, and the <b>-</b> and <b>_</b> characters</li>';
+       displayAlertMessage(message);
      }
      return false;
    }
-   if (!/^[\w\-\_]+$/.test(projectNameInput.value)) {
-     alertMessage.style.display = 'block';
-     alertMessage.innerHTML +=
+   if (!/^[\w\-\_]+$/.test(name)) {
+     const message =
        '<li>The Project Name can only contain uppercase and lowercase letters, numbers, and the <b>-</b> & <b>_</b> characters</li>';
+     displayAlertMessage(message);
      return false;
    }
    return true;
  }
 
- projectInputSubmit.addEventListener('click', (event) => {
-   alertMessage.innerHTML = '';
-   if (validateProjectInput()) {
-     localStorage.btEmail = btEmailInput.value;
-     project.name = projectNameInput.value.replace(/ /g, '_');
-     project.ref = projectRefInput.value;
-     project.user = document.getElementById('btEmailInput').value;
-     const d = new Date();
-     const [y, m, date, h, min, s] =
-       [d.getFullYear(), (d.getMonth() + 1), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()];
-     const defaultFilename = `${project.name}_inventory_${y}${m}${date}${h}${min}${s}`;
-     document.getElementById('inventoryFilename').value = defaultFilename;
-     alertMessage.style.display = 'none';
-     document.getElementById('projectInput').style.display = 'none';
-     document.getElementById('inputForm').style.display = 'block';
-   }
- });
+ function displayAlertMessage(message) {
+   alertMessage.style.display = 'block';
+   alertMessage.innerHTML += message;
+ }
 
- const showFilesDirSelect = document.getElementById('showFilesDirSelect');
- showFilesDirSelect.addEventListener(
-   'click', (event) => {
-     const showFilesDir = dialog.showOpenDialog({
+ document.getElementById('projectInputContinue')
+   .addEventListener('click', (event) => {
+     alertMessage.innerHTML = '';
+     if (validateProjectInput(btEmailInput.value, projectNameInput.value, projectRefInput.value)) {
+       localStorage.btEmail = btEmailInput.value;
+       project.name = projectNameInput.value.replace(/ /g, '_');
+       project.ref = projectRefInput.value;
+       project.user = document.getElementById('btEmailInput').value;
+       const d = new Date();
+       const [y, m, date, h, min, s] =
+         [d.getFullYear(), (d.getMonth() + 1), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()];
+       const defaultFilename = `${project.name}_inventory_${y}${m}${date}${h}${min}${s}`;
+       document.getElementById('inventoryFilename').value = defaultFilename;
+       alertMessage.style.display = 'none';
+       document.getElementById('projectInput').style.display = 'none';
+       document.getElementById('inputForm').style.display = 'block';
+     }
+   });
+
+ document.getElementById('showFilesDirSelect')
+   .addEventListener(
+     'click', (event) => {
+       const showFilesDir = dialog.showOpenDialog({
+         properties: ['openDirectory']
+       });
+       document.getElementById('showFilesDirPath').value = showFilesDir;
+     });
+
+ document.getElementById('outputDirSelect')
+   .addEventListener('click', (event) => {
+     const outputDir = dialog.showOpenDialog({
        properties: ['openDirectory']
      });
-     document.getElementById('showFilesDirPath').value = showFilesDir;
+     document.getElementById('outputDirPath').value = outputDir;
    });
 
- const outputDirSelect = document.getElementById('outputDirSelect');
- outputDirSelect.addEventListener('click', (event) => {
-   const outputDir = dialog.showOpenDialog({
-     properties: ['openDirectory']
+ document.getElementById('build')
+   .addEventListener('click', (event) => {
+     const showFilesDirPath = document.getElementById('showFilesDirPath').value;
+     const outputDirPath = document.getElementById('outputDirPath').value;
+     const inventoryFilename = document.getElementById('inventoryFilename')
+       .value.replace(/ /g, '_');
+     ipcRenderer.send('build', showFilesDirPath, outputDirPath, inventoryFilename);
    });
-   document.getElementById('outputDirPath').value = outputDir;
- });
-
- const buildButton = document.getElementById('build');
- buildButton.addEventListener('click', (event) => {
-   const showFilesDirPath = document.getElementById('showFilesDirPath').value;
-   const outputDirPath = document.getElementById('outputDirPath').value;
-   const inventoryFilename = document.getElementById('inventoryFilename').value
-     .replace(/ /g, '_');
-   ipcRenderer.send('build', showFilesDirPath, outputDirPath,
-     inventoryFilename);
- });
 
  ipcRenderer.on('stats', (event, inventoryFilename, noOfFiles, noOfDevices, timeTaken) => {
    document.getElementById('inputForm').style.display = 'none';
@@ -122,17 +127,17 @@
    });
  });
 
- const startAgain = document.getElementById('startAgain');
- startAgain.addEventListener('click', (event) => {
-   document.getElementById('alertMessage').style.visibility = 'hidden';
-   document.getElementById('resultMessage').style.display = 'none';
-   document.getElementById('showFilesDirPath').value = '';
-   document.getElementById('outputDirPath').value = '';
-   document.getElementById('projectInput').style.display = 'block';
- });
+ document.getElementById('startAgain')
+   .addEventListener('click', (event) => {
+     document.getElementById('alertMessage').style.visibility = 'hidden';
+     document.getElementById('resultMessage').style.display = 'none';
+     document.getElementById('showFilesDirPath').value = '';
+     document.getElementById('outputDirPath').value = '';
+     document.getElementById('projectInput').style.display = 'block';
+   });
 
  ipcRenderer.on('showFilesENOENT', (event, path) => {
    const showFilesError = document.getElementById('showFilesError');
    showFilesError.style.display = 'block';
-   showFilesError.innerHTML = `<p><b>${path}</b> is not a valid directory.</p>`
+   showFilesError.innerHTML = `<p><b>${path}</b> is not a valid directory.</p>`;
  });

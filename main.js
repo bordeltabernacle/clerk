@@ -65,12 +65,10 @@
    let result;
    try {
      result = clerk.buildContent(showFilesDir);
-     console.log('1: ' + result);
    } catch (e) {
      event.sender.send('showFilesENOENT', e.path);
    }
    try {
-     console.log('2: ' + result);
      const fullFilePath = clerk.writeDataToCSV(result.get('content'), outputDir, inventoryFilename);
      const end = now();
      event.sender.send(
