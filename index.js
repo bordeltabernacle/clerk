@@ -182,6 +182,10 @@
      noOfFiles,
      noOfDevices,
      timeTaken);
+   document.getElementById('openFile')
+     .addEventListener('click', (event) => {
+       shell.openItem(inventoryFilename);
+     });
  });
 
  /**
