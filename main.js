@@ -69,7 +69,8 @@
      event.sender.send('showFilesENOENT', e.path);
    }
    try {
-     const fullFilePath = clerk.writeDataToCSV(result.get('content'), outputDir, inventoryFilename);
+     const fullFilePath =
+       clerk.writeDataToCSV(result.get('content'), outputDir, inventoryFilename);
      const end = now();
      event.sender.send(
        'stats',
