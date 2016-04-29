@@ -62,23 +62,24 @@
  // build data and write to csv, then send back stats
  ipcMain.on('build', (event, showFilesDir, outputDir, inventoryFilename) => {
    const start = now();
-   let result;
+   let result = '';
    try {
      result = clerk.buildContent(showFilesDir);
    } catch (e) {
      event.sender.send('showFilesENOENT', e.path);
    }
-   try {
+   if (result !== '') {
      const fullFilePath =
-       clerk.writeDataToCSV(result.get('content'), outputDir, inventoryFilename);
+       clerk.writeDataToCSV(
+         result.get('content'),
+         outputDir,
+         inventoryFilename
+       );
      const end = now();
      event.sender.send(
        'stats',
        fullFilePath,
        result.get('files'),
-       result.get('devices'), (end - start)
-     );
-   } catch (e) {
-     console.log(e);
+       result.get('devices'), (end - start));
    }
  });

@@ -126,23 +126,24 @@
      }
    });
 
+ function openDirDialog(pathDivID) {
+   document.getElementById('showFilesError').style.display = 'none';
+   document.getElementById(pathDivID).value =
+     dialog.showOpenDialog({
+       properties: ['openDirectory']
+     });
+ }
+
  // present a directory chooser to select the show files directory
  document.getElementById('showFilesDirSelect')
-   .addEventListener(
-     'click', (event) => {
-       const showFilesDir = dialog.showOpenDialog({
-         properties: ['openDirectory']
-       });
-       document.getElementById('showFilesDirPath').value = showFilesDir;
-     });
+   .addEventListener('click', (event) => {
+     openDirDialog('showFilesDirPath');
+   });
 
  // present a directory chooser for the output directory
  document.getElementById('outputDirSelect')
    .addEventListener('click', (event) => {
-     const outputDir = dialog.showOpenDialog({
-       properties: ['openDirectory']
-     });
-     document.getElementById('outputDirPath').value = outputDir;
+     openDirDialog('outputDirPath');
    });
 
  // actions to take when user clicks on the build button
@@ -215,6 +216,6 @@
  ipcRenderer.on('showFilesENOENT', (event, path) => {
    // display error
    const showFilesError = document.getElementById('showFilesError');
-   const message = `<p><b>${path}</b> is not a valid directory.</p>`;
+   const message = `<p>The Show Files directory <b>${path}</b> is not a valid directory.</p>`;
    displayMessage(showFilesError, message);
  });
