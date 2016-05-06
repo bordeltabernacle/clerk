@@ -12,8 +12,9 @@
  const BrowserWindow = electron.BrowserWindow;
  const path = require('path');
  const ipcMain = electron.ipcMain;
+ require('electron-reload')(__dirname);
  const now = require('lodash.now');
- const clerk = require('./clerk.js');
+ const clerk = require('./lib/clerk');
 
  /**
   * Electron setup
@@ -37,8 +38,8 @@
  app.on('ready', () => {
    // Create the browser window.
    mainWindow = new BrowserWindow({
-     width: 800,
-     height: 600,
+     width: 1280,
+     height: 720,
      center: true,
      resizable: false,
      autoHideMenuBar: true

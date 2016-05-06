@@ -5,7 +5,6 @@
  // * Written by Rob Phoenix <rob.phoenix@bt.com>, 2016
  // *******************************************************
 
- require('bootstrap');
  const electron = require('electron');
  const ipcRenderer = electron.ipcRenderer;
  const dialog = electron.remote.require('dialog');
@@ -21,8 +20,7 @@
  };
 
  // retrieve previously entered BT email address
- document.getElementById('btEmailInput')
-   .value = localStorage.btEmail;
+ $('#btEmailInput').val(localStorage.btEmail);
 
  /**
   * validates project input form fields
@@ -83,79 +81,75 @@
   * no @return
   */
  function displayMessage(messageType, message) {
-   messageType.style.display = 'block';
-   messageType.innerHTML += message;
+   $(messageType).show();
+   $(messageType).append(message);
  }
 
  // Actions to take when user clicks to move on from opening Project Input page
- document.getElementById('projectInputContinue')
-   .addEventListener('click', (event) => {
-     const alertMessage = document.getElementById('alertMessage');
-     const btEmailInput = document.getElementById('btEmailInput');
-     const projectNameInput = document.getElementById('projectNameInput');
-     const projectRefInput = document.getElementById('projectRefInput');
-     // clear any previous alert messages
-     alertMessage.innerHTML = '';
-     // validate input
-     if (validateProjectInput(
-       btEmailInput.value,
-       projectNameInput.value,
-       projectRefInput.value,
-       alertMessage
-     )) {
-       // store email for next time
-       localStorage.btEmail = btEmailInput.value;
-       // project name will be used in the filename so
-       // replace any spaces with underscores
-       project.name = projectNameInput.value.replace(/\s+/g, '_');
-       project.ref = projectRefInput.value;
-       project.user = document.getElementById('btEmailInput').value;
-       // use current time to the second to keep filenames unique
-       const d = new Date();
-       const [y, m, date, h, min, s] =
-         [d.getFullYear(), (d.getMonth() + 1), d.getDate(),
-         d.getHours(), d.getMinutes(), d.getSeconds()
-       ];
-       const defaultFilename =
-         `${project.name}_inventory_${y}${m}${date}${h}${min}${s}`;
-       document.getElementById('inventoryFilename').value = defaultFilename;
-       // as all is successful we can moce onto the next page
-       alertMessage.style.display = 'none';
-       document.getElementById('projectInput').style.display = 'none';
-       document.getElementById('inputForm').style.display = 'block';
-     }
-   });
+ $('#projectInputContinue').on('click', () => {
+   const alertMessage = '#alertMessage';
+   const btEmailInput = $('#btEmailInput');
+   const projectNameInput = $('#projectNameInput');
+   const projectRefInput = $('#projectRefInput');
+   // clear any previous alert messages
+   $(alertMessage).html('');
+   // validate input
+   if (validateProjectInput(
+     btEmailInput.val(),
+     projectNameInput.val(),
+     projectRefInput.val(),
+     alertMessage
+   )) {
+     // store email for next time
+     localStorage.btEmail = btEmailInput.val();
+     // project name will be used in the filename so
+     // replace any spaces with underscores
+     project.name = projectNameInput.val().replace(/\s+/g, '_');
+     project.ref = projectRefInput.val();
+     project.user = $('#btEmailInput').val();
+     // use current time to the second to keep filenames unique
+     const d = new Date();
+     const [y, m, date, h, min, s] =
+       [d.getFullYear(), (d.getMonth() + 1), d.getDate(),
+       d.getHours(), d.getMinutes(), d.getSeconds()
+     ];
+     const defaultFilename =
+       `${project.name}_inventory_${y}${m}${date}${h}${min}${s}`;
+     $('#inventoryFilename').val(defaultFilename);
+     // as all is successful we can moce onto the next page
+     $(alertMessage).hide();
+     $('#projectInput').hide();
+     $('#inputForm').show();
+   }
+ });
 
  function openDirDialog(pathDivID) {
-   document.getElementById('showFilesError').style.display = 'none';
-   document.getElementById(pathDivID).value =
+   $('#showFilesError').hide();
+   $(`#${pathDivID}`).val(
      dialog.showOpenDialog({
        properties: ['openDirectory']
-     });
+     }));
  }
 
  // present a directory chooser to select the show files directory
- document.getElementById('showFilesDirSelect')
-   .addEventListener('click', (event) => {
-     openDirDialog('showFilesDirPath');
-   });
+ $('#showFilesDirSelect').on('click', () => {
+   openDirDialog('showFilesDirPath');
+ });
 
  // present a directory chooser for the output directory
- document.getElementById('outputDirSelect')
-   .addEventListener('click', (event) => {
-     openDirDialog('outputDirPath');
-   });
+ $('#outputDirSelect').on('click', () => {
+   openDirDialog('outputDirPath');
+ });
 
  // actions to take when user clicks on the build button
- document.getElementById('build')
-   .addEventListener('click', (event) => {
-     const showFilesDirPath = document.getElementById('showFilesDirPath').value;
-     const outputDirPath = document.getElementById('outputDirPath').value;
-     const inventoryFilename = document.getElementById('inventoryFilename').value;
-     // send the relevant data to the main process
-     ipcRenderer.send(
-       'build', showFilesDirPath, outputDirPath, inventoryFilename);
-   });
+ $('#build').on('click', () => {
+   const showFilesDirPath = document.getElementById('showFilesDirPath').value;
+   const outputDirPath = document.getElementById('outputDirPath').value;
+   const inventoryFilename = document.getElementById('inventoryFilename').value;
+   // send the relevant data to the main process
+   ipcRenderer.send(
+     'build', showFilesDirPath, outputDirPath, inventoryFilename);
+ });
 
  // actions to take when receive messages to 'stats' channel
  ipcRenderer.on('stats', (
@@ -163,16 +157,15 @@
    inventoryFilename,
    noOfFiles,
    noOfDevices,
-   timeTaken
- ) => {
+   timeTaken) => {
    // move page onto result message
-   document.getElementById('inputForm').style.display = 'none';
-   document.getElementById('resultMessage').style.display = 'block';
+   $('#inputForm').hide();
+   $('#resultMessage').show();
    // display inventory file name and location
-   document.getElementById('msg').innerHTML = `<b>${inventoryFilename}</b>`;
-   document.getElementById('stats').innerHTML =
+   $('#msg').html(`<b>${inventoryFilename}</b>`);
+   $('#stats').html(
      `<p><b>${noOfFiles}</b> files and <b>${noOfDevices}</b> ` +
-     `devices processed in <b>${timeTaken}ms</b>.</p>`;
+     `devices processed in <b>${timeTaken}ms</b>.</p>`);
    // push data to Firebase
    pushToDb(
      String(new Date()),
@@ -182,10 +175,9 @@
      noOfFiles,
      noOfDevices,
      timeTaken);
-   document.getElementById('openFile')
-     .addEventListener('click', (event) => {
-       shell.openItem(inventoryFilename);
-     });
+   $('#openFile').on('click', () => {
+     shell.openItem(inventoryFilename);
+   });
  });
 
  /**
@@ -206,15 +198,14 @@
  }
 
  // actions to take when user clicks startAgain button
- document.getElementById('startAgain')
-   .addEventListener('click', (event) => {
-     // clear data and move back to first page
-     document.getElementById('alertMessage').style.visibility = 'hidden';
-     document.getElementById('resultMessage').style.display = 'none';
-     document.getElementById('showFilesDirPath').value = '';
-     document.getElementById('outputDirPath').value = '';
-     document.getElementById('projectInput').style.display = 'block';
-   });
+ $('startAgain').on('click', () => {
+   // clear data and move back to first page
+   $('#alertMessage').css('visibility', 'hidden');
+   $('#resultMessage').hide();
+   $('#showFilesDirPath').val('');
+   $('#outputDirPath').val('');
+   $('#projectInput').show();
+ });
 
  // actions to take when receive error regarding invalid show file directory
  ipcRenderer.on('showFilesENOENT', (event, path) => {
