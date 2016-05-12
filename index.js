@@ -85,44 +85,6 @@
    $(messageType).append(message);
  }
 
- // Actions to take when user clicks to move on from opening Project Input page
- $('#projectInputContinue').on('click', () => {
-   const alertMessage = '#alertMessage';
-   const btEmailInput = $('#btEmailInput');
-   const projectNameInput = $('#projectNameInput');
-   const projectRefInput = $('#projectRefInput');
-   // clear any previous alert messages
-   $(alertMessage).html('');
-   // validate input
-   if (validateProjectInput(
-     btEmailInput.val(),
-     projectNameInput.val(),
-     projectRefInput.val(),
-     alertMessage
-   )) {
-     // store email for next time
-     localStorage.btEmail = btEmailInput.val();
-     // project name will be used in the filename so
-     // replace any spaces with underscores
-     project.name = projectNameInput.val().replace(/\s+/g, '_');
-     project.ref = projectRefInput.val();
-     project.user = $('#btEmailInput').val();
-     // use current time to the second to keep filenames unique
-     const d = new Date();
-     const [y, m, date, h, min, s] =
-       [d.getFullYear(), (d.getMonth() + 1), d.getDate(),
-       d.getHours(), d.getMinutes(), d.getSeconds()
-     ];
-     const defaultFilename =
-       `${project.name}_inventory_${y}${m}${date}${h}${min}${s}`;
-     $('#inventoryFilename').val(defaultFilename);
-     // as all is successful we can moce onto the next page
-     $(alertMessage).hide();
-     $('#projectInput').hide();
-     $('#inputForm').show();
-   }
- });
-
  function openDirDialog(pathDivID) {
    $('#showFilesError').hide();
    $(`#${pathDivID}`).val(
@@ -143,12 +105,45 @@
 
  // actions to take when user clicks on the build button
  $('#build').on('click', () => {
-   const showFilesDirPath = document.getElementById('showFilesDirPath').value;
-   const outputDirPath = document.getElementById('outputDirPath').value;
-   const inventoryFilename = document.getElementById('inventoryFilename').value;
-   // send the relevant data to the main process
-   ipcRenderer.send(
-     'build', showFilesDirPath, outputDirPath, inventoryFilename);
+
+   const alertMessage = '#alertMessage';
+   const btEmailInput = $('#btEmailInput');
+   const projectNameInput = $('#projectNameInput');
+   const projectRefInput = $('#projectRefInput');
+   // clear any previous alert messages
+   $(alertMessage).html('');
+   // validate input
+   if (validateProjectInput(
+     btEmailInput.val(),
+     projectNameInput.val(),
+     projectRefInput.val(),
+     alertMessage)) {
+     // store email for next time
+     localStorage.btEmail = btEmailInput.val();
+     // project name will be used in the filename so
+     // replace any spaces with underscores
+     project.name = projectNameInput.val().replace(/\s+/g, '_');
+     project.ref = projectRefInput.val();
+     project.user = $('#btEmailInput').val();
+     // use current time to the second to keep filenames unique
+     const d = new Date();
+     const [y, m, date, h, min, s] =
+       [d.getFullYear(), (d.getMonth() + 1), d.getDate(),
+       d.getHours(), d.getMinutes(), d.getSeconds()
+     ];
+     const defaultFilename =
+       `${project.name}_inventory_${y}${m}${date}${h}${min}${s}`;
+     // $('#inventoryFilename').val(defaultFilename);
+     // as all is successful we can moce onto the next page
+     $(alertMessage).hide();
+
+     const showFilesDirPath = $('#showFilesDirPath').val();
+     const outputDirPath = $('#outputDirPath').val();
+     // const inventoryFilename = $('#inventoryFilename').val();
+     // send the relevant data to the main process
+     ipcRenderer.send(
+       'build', showFilesDirPath, outputDirPath, defaultFilename);
+   }
  });
 
  // actions to take when receive messages to 'stats' channel

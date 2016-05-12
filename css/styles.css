@@ -11,51 +11,59 @@
   src: url('../fonts/BTFont_Rg.ttf')  format('truetype')
 }
 
-body {
-  background-color: white;
+* {
+  /*background-color: white;*/
   color: #55379b;
   font-family: 'BTFontRegular', sans-serif;
 }
 
 /** HEADER **/
-.navbar-header {
-
+header {
+  width: 100%;
+  height: 80px;
+  border-bottom: 2px solid #55379b;
+  margin: 0 auto;
 }
 
-.navbar {
-  width: 630px;
-  margin: 30px auto;
-  border-radius: 0;
-  border: 0;
-  background-image: none;
-  background-color: white;
-  box-shadow: none;
+#name {
+  position: absolute;
+  /*height: 50px;*/
+  font-size: 40px;
+  margin: 0;
+  padding: 0;
+  letter-spacing: 0.8px;
+  left: 182px;
+  /*top: 3%;*/
 }
 
-.navbar-default .navbar-brand {
-  color: #55379b;
-}
-
-.navbar-brand span {
-  margin-left: 30px;
-}
-
-.navbar-brand h1 {
-  font-size: 1.5em;
-  margin-top: 10px;
-  margin-bottom: 0;
-  margin-left: 30px;
+#tagline {
+  position: absolute;
+  font-size: 22px;
+  left: 180px;
+  top: 46px;
 }
 
 #logo-img {
-  width: 150px; /* you can use % */
-  height: auto;
-  margin: 10px 15px 10px 0;
+  width: 102px;
+  height: 50px;
+  margin: 20px 0 0 20px;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
+
 /** CONTENT **/
+#projectInput {
+  position: absolute;
+  left: 0;
+  margin: 20px;
+}
+
 #inputForm {
-  display:none;
+  position: absolute;
+  left: 200px;
+  margin: 20px;
 }
 
 #loginPage {

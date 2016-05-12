@@ -14,30 +14,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Bootstrap -->
-<!--   <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
-  <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css" />
- -->  <!-- Tooltips -->
+<!-- Tooltips -->
   <link rel="stylesheet" type="text/css" href="css/balloon.min.css" />
   <!-- Styles -->
   <link rel="stylesheet" type="text/css" href="css/styles.css" />
   <!-- jQuery -->
   <script>const $ = jQuery = require('jquery');</script>
-  <title>Clerk</title>
+  <title>Clerk - Inventory Generation</title>
 </head>
 <body>
   <header>
-    <nav class="navbar navbar-default">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <img class="pull-left" id="logo-img" src="images/BT_mark_4col_pos_CS3_Small.jpg" alt="BT Logo">
-          <div class="navbar-brand">
-            <h1>Clerk</h1>
-            <span>Inventory Generation</span>
-          </div>
-        </div>
-      </div>
-    </nav>
+  <img id="logo-img" src="images/BT_mark_4col_pos_CS3_Small.jpg" alt="BT Logo">
+  <div id="app-name">
+  <span id="name">Clerk</span>
+  <span id="tagline">Inventory Generation</span>
+  </div>
   </header>
   <div id="main" class="container">
     <div class="row">
@@ -46,10 +37,6 @@
           <!-- LOGIN PAGE -->
           <div id="projectInput">
             <form class="form-horizontal" id="loginForm">
-              <div>
-                <h4>Please Enter the following information.</h4>
-              </div>
-
               <div class="form-group">
               <label for="btEmailInput" class="col-xs-4 control-label">BT Email Address</label>
               <div class="col-xs-4" data-balloon-length="medium" data-balloon="This must be a valid BT email address." data-balloon-pos="up">
@@ -72,13 +59,8 @@
 
               </div>
               <div id="alertMessage" class="alert alert-danger" role="alert">
-            <ul>
-
-            </ul>
+            <ul></ul>
             </div>
-              <div class="form-group">
-                <button id="projectInputContinue" type="button" class="btn btn-default form-button pull-right">Continue</button>
-              </div>
             </form>
 
           </div>
@@ -96,10 +78,7 @@
                 <input type="text" class="form-control" id="outputDirPath" placeholder="output directory">
                 <button type="button" class="btn btn-default form-button" id="outputDirSelect">Browse</button>
               </div>
-              <div class="form-group">
-                <label for="inventoryFilename" data-balloon-length="medium" data-balloon="Your Inventory will be individually named according to the date and time unless otherwise specified.  You do not need to specify the file extension, it will be .csv" data-balloon-pos="right">Inventory Filename:</label>
-                <input type="text" class="form-control" id="inventoryFilename" aria-describedby="basic-addon2">
-              </div>
+
               <div class="form-group">
                 <button id="build" type="button" class="btn btn-default form-button" data-balloon-length="medium" data-balloon="Let's build your Inventory!" data-balloon-pos="right">Build Inventory</button>
               </div>
