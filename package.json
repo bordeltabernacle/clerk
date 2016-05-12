@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "babel-eslint": "^6.0.3",
+    "devtron": "^1.1.0",
     "electron-prebuilt": "^0.37.2",
     "eslint": "^2.8.0",
     "eslint-plugin-promise": "^1.1.0"
