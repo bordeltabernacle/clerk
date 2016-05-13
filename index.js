@@ -9,6 +9,7 @@
  const ipcRenderer = electron.ipcRenderer;
  const dialog = electron.remote.require('dialog');
  const shell = electron.shell;
+ const path = require('path');
  const Firebase = require('firebase');
  const db = new Firebase('https://clerk.firebaseio.com/');
 
@@ -30,7 +31,7 @@
   * @param  {Object} messageType      Which message to be displayed
   * @return {boolean}                 Validation success/failure
   */
- function validateProjectInput(email, name, ref, messageType) {
+ function validateinputForm(email, name, ref, messageType) {
    const btEmailRegex = /\w+\.?\d?\.\w+@bt\.com/;
    const projectNameRegex = /[\w\-\_\s]+/;
    const emailEmptyMessage = '<li>Please Enter your BT Email Address</li>';
@@ -105,15 +106,15 @@
 
  // actions to take when user clicks on the build button
  $('#build').on('click', () => {
-
    const alertMessage = '#alertMessage';
    const btEmailInput = $('#btEmailInput');
    const projectNameInput = $('#projectNameInput');
    const projectRefInput = $('#projectRefInput');
    // clear any previous alert messages
    $(alertMessage).html('');
+   $('#showFilesError').html('');
    // validate input
-   if (validateProjectInput(
+   if (validateinputForm(
      btEmailInput.val(),
      projectNameInput.val(),
      projectRefInput.val(),
@@ -133,10 +134,8 @@
      ];
      const defaultFilename =
        `${project.name}_inventory_${y}${m}${date}${h}${min}${s}`;
-     // $('#inventoryFilename').val(defaultFilename);
-     // as all is successful we can moce onto the next page
+     // as all is successful we can move onto the next page
      $(alertMessage).hide();
-
      const showFilesDirPath = $('#showFilesDirPath').val();
      const outputDirPath = $('#outputDirPath').val();
      // const inventoryFilename = $('#inventoryFilename').val();
@@ -149,18 +148,22 @@
  // actions to take when receive messages to 'stats' channel
  ipcRenderer.on('stats', (
    event,
-   inventoryFilename,
+   theFile,
+   thePath,
    noOfFiles,
    noOfDevices,
    timeTaken) => {
    // move page onto result message
    $('#inputForm').hide();
-   $('#resultMessage').show();
-   // display inventory file name and location
-   $('#msg').html(`<b>${inventoryFilename}</b>`);
-   $('#stats').html(
+   $('#resultMessage').html(
+     '<p>Your Inventory has been created successfully</p>' +
+     `<p><b>File:</b> ${theFile}</p>` +
+     `<p><b>Location:</b> ${thePath}` +
      `<p><b>${noOfFiles}</b> files and <b>${noOfDevices}</b> ` +
      `devices processed in <b>${timeTaken}ms</b>.</p>`);
+   $('#result').show();
+   $('#inventoryFilename').text(path.join(thePath, theFile));
+   // display inventory file name and location
    // push data to Firebase
    pushToDb(
      String(new Date()),
@@ -171,6 +174,7 @@
      noOfDevices,
      timeTaken);
    $('#openFile').on('click', () => {
+     const inventoryFilename = $('#inventoryFilename').text();
      shell.openItem(inventoryFilename);
    });
  });
@@ -193,13 +197,15 @@
  }
 
  // actions to take when user clicks startAgain button
- $('startAgain').on('click', () => {
+ $('#startAgain').on('click', () => {
    // clear data and move back to first page
    $('#alertMessage').css('visibility', 'hidden');
-   $('#resultMessage').hide();
+   $('#result').hide();
    $('#showFilesDirPath').val('');
    $('#outputDirPath').val('');
-   $('#projectInput').show();
+   $('#projectNameInput').val('');
+   $('#projectRefInput').val('');
+   $('#inputForm').show();
  });
 
  // actions to take when receive error regarding invalid show file directory

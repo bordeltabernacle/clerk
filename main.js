@@ -38,7 +38,7 @@
  app.on('ready', () => {
    // Create the browser window.
    mainWindow = new BrowserWindow({
-     width: 1280,
+     width: 600,
      height: 720,
      center: true,
      resizable: false,
@@ -62,6 +62,8 @@
  // on 'build' trigger, receive input & output directories & filename;
  // build data and write to csv, then send back stats
  ipcMain.on('build', (event, showFilesDir, outputDir, inventoryFilename) => {
+   console.log(showFilesDir);
+
    const start = now();
    let result = '';
    try {
@@ -77,9 +79,12 @@
          inventoryFilename
        );
      const end = now();
+     const theFile = path.basename(fullFilePath);
+     const thePath = path.dirname(fullFilePath);
      event.sender.send(
        'stats',
-       fullFilePath,
+       theFile,
+       thePath,
        result.get('files'),
        result.get('devices'), (end - start));
    }

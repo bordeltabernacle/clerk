@@ -12,35 +12,36 @@
 }
 
 * {
-  /*background-color: white;*/
   color: #55379b;
   font-family: 'BTFontRegular', sans-serif;
+  box-sizing: border-box;
 }
 
 /** HEADER **/
 header {
-  width: 100%;
   height: 80px;
   border-bottom: 2px solid #55379b;
-  margin: 0 auto;
+  margin: 0;
+  padding: 0;
 }
 
 #name {
   position: absolute;
-  /*height: 50px;*/
   font-size: 40px;
   margin: 0;
   padding: 0;
   letter-spacing: 0.8px;
-  left: 182px;
-  /*top: 3%;*/
+  top: 6px;
+  right: 0;
+  margin-right: 20px;
 }
 
 #tagline {
   position: absolute;
   font-size: 22px;
-  left: 180px;
   top: 46px;
+  right: 0;
+  margin-right: 20px;
 }
 
 #logo-img {
@@ -54,61 +55,103 @@ header {
 
 
 /** CONTENT **/
-#projectInput {
-  position: absolute;
-  left: 0;
-  margin: 20px;
+#inputForm {
+  margin: 20px 40px 0 40px;
+  font-size: 18px;
 }
 
-#inputForm {
+
+form label {
+/*  width: 30%;
+  margin-right: 10px;
+  float: left;*/
+  display: block;
+  margin-bottom: 3px;
+}
+
+form input {
+  width: 488px;
+  border: 1px solid #55379b;
+  border-radius: 3px;
+  height: 35px;
+  margin-bottom: 15px;
+  font-size: 16px;
+  padding: 10px;
+  display: block;
+  background-color: whitesmoke;
+}
+
+.selectInput {
+  display: inline;
+  width: 400px;
+  left 0;
+}
+
+form button {
   position: absolute;
-  left: 200px;
-  margin: 20px;
+  right: 0;
+  height: 35px;
+  border: 1px solid #55379b;
+  border-radius: 3px;
+  background-color: #55379b;
+  color: white;
+  padding: 0 20px 0 20px;
+  font-size: 16px;
+  margin-right: 45px;
+}
+
+form button:hover {
+  background-color: whitesmoke;
+  color: #55379b;
+  cursor: pointer;
+}
+
+form input:focus {
+  /*border: 2px solid #55379b;*/
+  background-color: #ffffff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(85, 55, 155, 1);
+}
+
+#result {
+  display: none;
+  width: 488px;
+  font-size: 18px;
+  margin: 30px 40px 0 40px;
+}
+
+#result button {
+/*  position: absolute;
+  right: 0;*/
+  height: 35px;
+  border: 1px solid #55379b;
+  border-radius: 3px;
+  background-color: #55379b;
+  color: white;
+  padding: 0 20px 0 20px;
+  font-size: 16px;
+}
+
+#result button:hover {
+  background-color: whitesmoke;
+  color: #55379b;
+  cursor: pointer;
+}
+
+#projectSection {
+  margin: 35px 0 45px 0;
 }
 
 #loginPage {
   margin: 0 auto;
 }
 
-#resultMessage {
+#inventoryFilename {
   display: none;
 }
 
 #alertMessage {
   display: none;
-}
-
-#btEmailInput {
-  margin-bottom: 30px;
-}
-
-#main {
-  width: 600px;
-  margin: 0 auto;
-}
-
-.form-control {
-  border-color: #55379b;
-}
-
-.form-control:focus {
-  border-color: #55379b;
-  border-width: 2px;
-  box-shadow: none;
-  -webkit-box-shadow: none;
-}
-
-.form-button {
-  margin-top: 5px;
-  color: #55379b;
-  border-color: #55379b;
-  background-image: none;
-  background-color: #eeeeee;
-}
-
-.form-button:hover {
-  background-color: #55379b;
-  color: white;
 }
 
 #showFilesError {
