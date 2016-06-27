@@ -16,10 +16,10 @@
     "devtron": "^1.1.0",
     "electron-prebuilt": "^0.37.2",
     "eslint": "^2.8.0",
-    "eslint-plugin-promise": "^1.1.0"
+    "eslint-plugin-promise": "^1.1.0",
+    "electron-reload": "^0.3.0"
   },
   "dependencies": {
-    "electron-reload": "^0.3.0",
     "firebase": "^2.4.2",
     "handlebars": "^4.0.5",
     "immutable": "^3.7.6",

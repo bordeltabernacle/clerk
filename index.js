@@ -1,5 +1,5 @@
  // *******************************************************
- // * Copyright (C) BT - All Rights Reservedrob.phoenix@bt.com
+ // * Copyright (C) BT - All Rights Reserved
  // * Unauthorized copying of this file, via any medium is strictly prohibited
  // * Proprietary and confidential
  // * Written by Rob Phoenix <rob.phoenix@bt.com>, 2016
