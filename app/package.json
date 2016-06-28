@@ -7,18 +7,29 @@
     "url": "https://github.com/bordeltabernacle/clerk.git"
   },
   "main": "main.js",
-  "productName": "Clerk",
+  "productName": "clerk",
   "author": "Rob Phoenix <rob.phoenix@bt.com>",
   "scripts": {
-    "start": "electron . --enable-logging"
+    "start": "electron . --enable-logging",
+    "clean": "rimraf dist",
+    "exe32": "electron-packager . clerk --platform win32 --arch ia32 --out dist/ --ignore \"(dist|node_modules/electron.*)\" --icon images/icon.png",
+    "exe64": "electron-packager . clerk --platform win32 --arch x64 --out dist/ --ignore \"(dist|node_modules/electron.*)\" --icon images/icon.png",
+    "set32": "electron-installer-windows --src dist/clerk-win32-ia32/ --dest dist/installers/ia32/ --config config.json",
+    "set64": "electron-installer-windows --src dist/clerk-win32-x64/ --dest dist/installers/x64/ --config config.json",
+    "build": "npm run clean && npm run exe64 && npm run set64"
   },
   "devDependencies": {
     "babel-eslint": "^6.0.3",
     "devtron": "^1.1.0",
-    "electron-prebuilt": "^0.37.2",
+    "electron-reload": "^0.3.0",
     "eslint": "^2.8.0",
     "eslint-plugin-promise": "^1.1.0",
-    "electron-reload": "^0.3.0"
+    "electron-installer-windows": "*",
+    "electron-packager": "*",
+    "electron-prebuilt": "*",
+    "fs-plus": "*",
+    "rimraf": "*",
+    "yargs": "*"
   },
   "dependencies": {
     "firebase": "^2.4.2",

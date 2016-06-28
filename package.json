@@ -1,28 +1,25 @@
 {
   "name": "clerk",
   "version": "0.1.0",
-  "description": "Inventory Generation",
+  "description": "Cisco Inventory Generation",
   "repository": {
     "type": "git",
     "url": "https://github.com/bordeltabernacle/clerk.git"
   },
   "main": "main.js",
-  "productName": "Clerk",
   "author": "Rob Phoenix <rob.phoenix@bt.com>",
   "scripts": {
-    "start": "electron . --enable-logging"
+    "start": "electron ./app/. --enable-logging",
+    "build": "electron-packager ./app/ --platform=win32 --arch=x64 --asar --icon=./app/images/icon.png --out=./build/ --overwrite"
   },
   "devDependencies": {
     "babel-eslint": "^6.0.3",
     "devtron": "^1.1.0",
-    "electron-prebuilt": "^0.37.2",
     "eslint": "^2.8.0",
-    "eslint-plugin-promise": "^1.1.0",
-    "electron-reload": "^0.3.0"
+    "eslint-plugin-promise": "^1.1.0"
   },
   "dependencies": {
     "firebase": "^2.4.2",
-    "handlebars": "^4.0.5",
     "immutable": "^3.7.6",
     "jquery": "^2.2.3",
     "lodash.foreach": "^4.2.0",

@@ -7,7 +7,9 @@
 
  const electron = require('electron');
  const ipcRenderer = electron.ipcRenderer;
- const dialog = electron.remote.require('dialog');
+ const {
+   dialog
+ } = electron.remote;
  const shell = electron.shell;
  const path = require('path');
  const Firebase = require('firebase');
