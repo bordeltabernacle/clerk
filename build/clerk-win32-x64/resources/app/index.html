@@ -1,0 +1,68 @@
+﻿<!--
+*******************************************************
+* Copyright (C) BT - All Rights Reservedrob.phoenix@bt.com
+* Unauthorized copying of this file, via any medium is strictly prohibited
+* Proprietary and confidential
+* Written by Rob Phoenix <rob.phoenix@bt.com>, 2016
+*******************************************************
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Styles -->
+    <link rel="stylesheet" type="text/css" href="css/styles.css" />
+    <!-- jQuery -->
+    <script>const $ = jQuery = require('jquery');</script>
+    <title>Clerk - Inventory Generation</title>
+  </head>
+  <body>
+    <header>
+      <img id="logo-img" src="images/BT_mark_4col_pos_CS3_Small.jpg" alt="BT Logo">
+      <div id="app-name">
+        <span id="name">Clerk</span>
+        <span id="tagline">Inventory Generation</span>
+      </div>
+    </header>
+    <!-- LOGIN PAGE -->
+    <div id="inputForm">
+      <form>
+        <div id="alertMessage" role="alert">
+          <ul>
+          </ul>
+        </div>
+        <div id="btEmailSection">
+          <label for="btEmailInput">BT Email Address:</label>
+          <input id="btEmailInput" type="email" placeholder="BT email" pattern="\w+\.(\d\.)?\w+\@bt\.com">
+        </div>
+        <div id="projectSection">
+          <label for="projectNameInput">Project Name:</label>
+          <input id="projectNameInput" type="text" placeholder="Project Name">
+          <label for="projectRefInput">Project Reference:</label>
+          <input id="projectRefInput" type="text" class="form-control" placeholder="Project Reference">
+        </div>
+        <div id="directoryChoiceSection">
+          <div id="showFilesError" role="alert"></div>
+          <label for="showFilesDirPath">Select your configuration files directory:</label>
+          <input id="showFilesDirPath" type="text" placeholder="show files directory" class="selectInput" />
+          <button type="button" id="showFilesDirSelect">Browse</button>
+          <label for="outputDirPath">Select your output directory:</label>
+          <input type="text" id="outputDirPath" placeholder="output directory" class="selectInput" />
+          <button type="button" id="outputDirSelect">Browse</button>
+        </div>
+        <button id="build" type="button">Build Inventory</button>
+      </form>
+    </div>
+    <!-- RESULT MESSAGE -->
+    <div id="result">
+      <div id="resultMessage">
+    </div>
+    <button id="openFile">View inventory</button>
+    <button id="startAgain">Generate another inventory</button>
+    </div>
+    <div id="inventoryFilename"></div>
+    <!-- PROJECT -->
+    <script src="index.js"></script>
+  </body>
+</html>

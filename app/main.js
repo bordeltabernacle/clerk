@@ -12,7 +12,6 @@
  const BrowserWindow = electron.BrowserWindow;
  const path = require('path');
  const ipcMain = electron.ipcMain;
- require('electron-reload')(__dirname);
  const now = require('lodash.now');
  const clerk = require('./lib/clerk');
 

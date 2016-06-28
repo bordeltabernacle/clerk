@@ -21,19 +21,11 @@
   "devDependencies": {
     "babel-eslint": "^6.0.3",
     "devtron": "^1.1.0",
-    "electron-reload": "^0.3.0",
     "eslint": "^2.8.0",
-    "eslint-plugin-promise": "^1.1.0",
-    "electron-installer-windows": "*",
-    "electron-packager": "*",
-    "electron-prebuilt": "*",
-    "fs-plus": "*",
-    "rimraf": "*",
-    "yargs": "*"
+    "eslint-plugin-promise": "^1.1.0"
   },
   "dependencies": {
     "firebase": "^2.4.2",
-    "handlebars": "^4.0.5",
     "immutable": "^3.7.6",
     "jquery": "^2.2.3",
     "lodash.foreach": "^4.2.0",

@@ -10,21 +10,14 @@
   "author": "Rob Phoenix <rob.phoenix@bt.com>",
   "scripts": {
     "start": "electron ./app/. --enable-logging",
-    "build": "electron-packager ./app/ --platform=win32 --arch=x64 --asar --icon=./app/images/icon.png --out=./build/ --overwrite"
+    "exe64": "electron-packager ./app/. clerk --platform win32 --arch x64 --icon= --out build/ --icon ./app/images/icon.png --overwrite"
   },
   "devDependencies": {
-    "babel-eslint": "^6.0.3",
-    "devtron": "^1.1.0",
-    "eslint": "^2.8.0",
-    "eslint-plugin-promise": "^1.1.0"
-  },
-  "dependencies": {
-    "firebase": "^2.4.2",
-    "immutable": "^3.7.6",
-    "jquery": "^2.2.3",
-    "lodash.foreach": "^4.2.0",
-    "lodash.map": "^4.3.0",
-    "lodash.now": "^4.0.0",
-    "lodash.range": "^3.1.4"
+    "electron-packager": "*",
+    "electron-prebuilt": "*",
+    "electron-winstaller": "^2.3.1",
+    "fs-plus": "*",
+    "rimraf": "*",
+    "yargs": "*"
   }
 }

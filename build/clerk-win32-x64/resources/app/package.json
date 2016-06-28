@@ -1,0 +1,36 @@
+{
+  "name": "clerk",
+  "version": "0.1.0",
+  "description": "Inventory Generation",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bordeltabernacle/clerk.git"
+  },
+  "main": "main.js",
+  "productName": "clerk",
+  "author": "Rob Phoenix <rob.phoenix@bt.com>",
+  "scripts": {
+    "start": "electron . --enable-logging",
+    "clean": "rimraf dist",
+    "exe32": "electron-packager . clerk --platform win32 --arch ia32 --out dist/ --ignore \"(dist|node_modules/electron.*)\" --icon images/icon.png",
+    "exe64": "electron-packager . clerk --platform win32 --arch x64 --out dist/ --ignore \"(dist|node_modules/electron.*)\" --icon images/icon.png",
+    "set32": "electron-installer-windows --src dist/clerk-win32-ia32/ --dest dist/installers/ia32/ --config config.json",
+    "set64": "electron-installer-windows --src dist/clerk-win32-x64/ --dest dist/installers/x64/ --config config.json",
+    "build": "npm run clean && npm run exe64 && npm run set64"
+  },
+  "devDependencies": {
+    "babel-eslint": "^6.0.3",
+    "devtron": "^1.1.0",
+    "eslint": "^2.8.0",
+    "eslint-plugin-promise": "^1.1.0"
+  },
+  "dependencies": {
+    "firebase": "^2.4.2",
+    "immutable": "^3.7.6",
+    "jquery": "^2.2.3",
+    "lodash.foreach": "^4.2.0",
+    "lodash.map": "^4.3.0",
+    "lodash.now": "^4.0.0",
+    "lodash.range": "^3.1.4"
+  }
+}
