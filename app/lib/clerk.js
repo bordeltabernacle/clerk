@@ -25,7 +25,7 @@
    // {{hostname}}#sh ver
    // we only need one occurrence of it
    const hnre1 = /hostname\s(.*)/i;
-   const hnre2 = /(\S+)#sho?w?\s+ver.*/i;
+   const hnre2 = /(\S+)#\s?sho?w?\s+ver.*/i;
    const hn1 = hnre1.exec(fileContent);
    const hn2 = hnre2.exec(fileContent);
    if (hn1 != null) {
