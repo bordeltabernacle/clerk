@@ -10,7 +10,10 @@
   "author": "Rob Phoenix <rob.phoenix@bt.com>",
   "scripts": {
     "start": "electron ./app/. --enable-logging",
-    "exe64": "electron-packager ./app/. clerk --platform win32 --arch x64 --icon= --out build/ --icon ./app/images/icon.png --overwrite"
+    "clean": "rimraf dist && rimraf build",
+    "exe64": "electron-packager ./app/. clerk --platform win32 --arch x64 --icon= --out build/ --icon ./app/images/icon.png --overwrite",
+    "set64": "node build.js",
+    "build": "npm run clean && npm run exe64 && npm run set64"
   },
   "devDependencies": {
     "electron-packager": "*",
