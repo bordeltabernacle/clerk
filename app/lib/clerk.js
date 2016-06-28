@@ -23,7 +23,7 @@
    // before the #show version command, ie.
    // {{hostname}}#sh ver
    // we only need one occurrence of it
-   const hostnameRegex = /(\S+)#sho?w?\s+ver.*/i;
+   const hostnameRegex = /hostname\s(\w+)\s/i;
    // the hostname is the second item in
    // the array returned by .exec
    const hostname = hostnameRegex.exec(fileContent)[1];
