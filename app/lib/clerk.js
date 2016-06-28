@@ -4,6 +4,7 @@
  // * Proprietary and confidential
  // * Written by Rob Phoenix <rob.phoenix@bt.com>, 2016
  // *******************************************************
+ 'use strict';
 
  const fs = require('fs');
  const path = require('path');
@@ -23,11 +24,17 @@
    // before the #show version command, ie.
    // {{hostname}}#sh ver
    // we only need one occurrence of it
-   const hostnameRegex = /hostname\s(\w+)\s/i;
-   // the hostname is the second item in
-   // the array returned by .exec
-   const hostname = hostnameRegex.exec(fileContent)[1];
-   return hostname;
+   const hnre1 = /hostname\s(.*)/i;
+   const hnre2 = /(\S+)#sho?w?\s+ver.*/i;
+   const hn1 = hnre1.exec(fileContent);
+   const hn2 = hnre2.exec(fileContent);
+   if (hn1 != null) {
+     return hn1[1];
+   } else if (hn2 != null) {
+     return hn2[1];
+   } else {
+     return 'No Hostname Found'
+   }
  }
 
  /**

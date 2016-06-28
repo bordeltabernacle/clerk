@@ -61,8 +61,6 @@
  // on 'build' trigger, receive input & output directories & filename;
  // build data and write to csv, then send back stats
  ipcMain.on('build', (event, showFilesDir, outputDir, inventoryFilename) => {
-   console.log(showFilesDir);
-
    const start = now();
    let result = '';
    try {
