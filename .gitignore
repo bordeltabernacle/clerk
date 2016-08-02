@@ -2,3 +2,6 @@
 node_modules/
 build/
 dist/
+BT*.ttf
+BT*.png
+BT*.jpg
