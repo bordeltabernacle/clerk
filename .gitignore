@@ -5,3 +5,6 @@ dist/
 BT*.ttf
 BT*.png
 BT*.jpg
+*.exe
+*.msi
+*.nupkg
